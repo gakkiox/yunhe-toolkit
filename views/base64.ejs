@@ -1,0 +1,392 @@
+<div
+  class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+  <!-- 标题区 -->
+  <div class="bg-gradient-to-r from-primary to-primary-light p-6 text-white">
+    <div class="flex items-center gap-3">
+      <i class="fa-solid fa-lock text-2xl"></i>
+      <div>
+        <h1 class="text-2xl font-bold">Base64加解密工具</h1>
+        <p class="text-white">支持文本的Base64编码与解码</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 操作选项卡 -->
+  <div class="border-b border-slate-200 dark:border-slate-700 p-4">
+    <div class="flex gap-2 overflow-x-auto">
+      <button id="encodeTab" class="tab-btn px-4 py-2 rounded-lg bg-primary text-white font-medium whitespace-nowrap">
+        编码
+      </button>
+      <button id="decodeTab"
+        class="tab-btn px-4 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 font-medium whitespace-nowrap">
+        解码
+      </button>
+    </div>
+  </div>
+
+  <!-- 内容区 -->
+  <div class="p-6">
+    <!-- 编码面板 -->
+    <div id="encodePanel" class="panel active">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">原文内容</label>
+          <textarea id="encodeInput"
+            class="w-full textarea-auto-height p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            placeholder="请输入要编码的文本..."></textarea>
+          <div class="flex gap-2 mt-3">
+            <button id="encodeBtn"
+              class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-light transition-colors">
+              <i class="fa-solid fa-arrow-right mr-2"></i>编码
+            </button>
+            <button id="clearEncodeBtn"
+              class="px-4 py-2 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+              <i class="fa-solid fa-trash mr-2"></i>清空
+            </button>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">编码结果</label>
+          <textarea id="encodeOutput"
+            class="w-full textarea-auto-height p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 shadow-sm outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            placeholder="编码结果将显示在此处..." readonly></textarea>
+          <div class="flex gap-2 mt-3">
+            <button id="copyEncodeBtn"
+              class="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-green-600 transition-colors">
+              <i class="fa-solid fa-copy mr-2"></i>复制
+            </button>
+            <button id="downloadEncodeBtn"
+              class="px-4 py-2 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+              <i class="fa-solid fa-download mr-2"></i>下载
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 解码面板 -->
+    <div id="decodePanel" class="panel hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">Base64编码</label>
+          <textarea id="decodeInput"
+            class="w-full textarea-auto-height p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            placeholder="请输入要解码的Base64字符串..."></textarea>
+          <div class="flex gap-2 mt-3">
+            <button id="decodeBtn"
+              class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-light transition-colors">
+              <i class="fa-solid fa-arrow-right mr-2"></i>解码
+            </button>
+            <button id="clearDecodeBtn"
+              class="px-4 py-2 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+              <i class="fa-solid fa-trash mr-2"></i>清空
+            </button>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">解码结果</label>
+          <textarea id="decodeOutput"
+            class="w-full textarea-auto-height p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 shadow-sm outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            placeholder="解码结果将显示在此处..." readonly></textarea>
+          <div class="flex gap-2 mt-3">
+            <button id="copyDecodeBtn"
+              class="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-green-600 transition-colors">
+              <i class="fa-solid fa-copy mr-2"></i>复制
+            </button>
+            <button id="downloadDecodeBtn"
+              class="px-4 py-2 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+              <i class="fa-solid fa-download mr-2"></i>下载
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 信息提示区 -->
+  <div class="bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 p-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+        <h3 class="font-semibold text-slate-800 dark:text-slate-200 mb-2 flex items-center gap-2">
+          <i class="fa-solid fa-info-circle text-primary"></i>什么是Base64
+        </h3>
+        <p class="text-sm text-slate-600 dark:text-slate-400">
+          Base64是一种基于64个可打印字符来表示二进制数据的表示方法，常用于在URL、Cookie、网页中传输少量二进制数据。</p>
+      </div>
+      <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+        <h3 class="font-semibold text-slate-800 dark:text-slate-200 mb-2 flex items-center gap-2">
+          <i class="fa-solid fa-shield-alt text-primary"></i>安全性说明
+        </h3>
+        <p class="text-sm text-slate-600 dark:text-slate-400">Base64不是加密算法，只是一种编码方式，不能用于保护敏感数据。如需加密，请使用真正的加密算法。</p>
+      </div>
+      <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+        <h3 class="font-semibold text-slate-800 dark:text-slate-200 mb-2 flex items-center gap-2">
+          <i class="fa-solid fa-lightbulb text-primary"></i>使用场景
+        </h3>
+        <p class="text-sm text-slate-600 dark:text-slate-400">常用于电子邮件传输、网页嵌入图片、API接口数据传输等场景。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+C93BDC78EBB83EAA
+
+<script>
+
+  // Tab切换功能
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.panel');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // 切换按钮状态
+      tabBtns.forEach(t => {
+        t.classList.remove('bg-primary', 'text-white');
+        t.classList.add('hover:bg-slate-100', 'dark:hover:bg-slate-700');
+      });
+      // 给当前点击的按钮设置激活样式
+      btn.classList.remove('hover:bg-slate-100', 'dark:hover:bg-slate-700');
+      btn.classList.add('bg-primary', 'text-white');
+
+      // 显示对应面板
+      const targetPanelId = btn.id.replace('Tab', 'Panel');
+      panels.forEach(panel => {
+        panel.classList.add('hidden');
+        if (panel.id === targetPanelId) {
+          panel.classList.remove('hidden');
+          panel.classList.add('active');
+        }
+      });
+    });
+  });
+
+  // 编码功能
+  document.getElementById('encodeBtn').addEventListener('click', () => {
+    const btn = document.getElementById('encodeBtn');
+    const originalText = btn.innerHTML;
+    const input = document.getElementById('encodeInput').value.trim();
+
+    // 非空校验
+    if (!input) {
+      showToast('请输入要编码的文本内容，内容不能为空', 'warning');
+      // 添加输入框抖动效果
+      const inputEl = document.getElementById('encodeInput');
+      inputEl.classList.add('animate-shake');
+      setTimeout(() => {
+        inputEl.classList.remove('animate-shake');
+      }, 500);
+      return;
+    }
+
+    // 显示处理状态
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>编码中...';
+    btn.classList.add('btn-processing');
+
+    setTimeout(() => {
+      try {
+        const encoded = btoa(encodeURIComponent(input).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
+        document.getElementById('encodeOutput').value = encoded;
+        // 恢复按钮状态
+        btn.innerHTML = originalText;
+        btn.classList.remove('btn-processing');
+        // 成功提示
+        showToast('编码成功', 'success');
+        // 添加成功动画
+        btn.style.backgroundColor = '#10b981';
+        setTimeout(() => {
+          btn.style.backgroundColor = '';
+        }, 1000);
+      } catch (error) {
+        // 恢复按钮状态
+        btn.innerHTML = originalText;
+        btn.classList.remove('btn-processing');
+        // 添加错误动画
+        btn.style.backgroundColor = '#ef4444';
+        setTimeout(() => {
+          btn.style.backgroundColor = '';
+        }, 1000);
+        // 错误提示
+        showToast('编码失败，请检查输入内容', 'error');
+      }
+    }, 300); // 模拟处理时间
+  });
+
+  // 解码功能
+  document.getElementById('decodeBtn').addEventListener('click', () => {
+    const btn = document.getElementById('decodeBtn');
+    const originalText = btn.innerHTML;
+    const input = document.getElementById('decodeInput').value.trim();
+
+    // 非空校验
+    if (!input) {
+      showToast('请输入要解码的Base64字符串，内容不能为空', 'warning');
+      // 添加输入框抖动效果
+      const inputEl = document.getElementById('decodeInput');
+      inputEl.classList.add('animate-shake');
+      setTimeout(() => {
+        inputEl.classList.remove('animate-shake');
+      }, 500);
+      return;
+    }
+
+    // 显示处理状态
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>解码中...';
+    btn.classList.add('btn-processing');
+
+    setTimeout(() => {
+      try {
+        const decoded = decodeURIComponent(Array.prototype.map.call(atob(input), c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        document.getElementById('decodeOutput').value = decoded;
+        // 恢复按钮状态
+        btn.innerHTML = originalText;
+        btn.classList.remove('btn-processing');
+        // 成功提示
+        showToast('解码成功', 'success');
+        // 添加成功动画
+        btn.style.backgroundColor = '#10b981';
+        setTimeout(() => {
+          btn.style.backgroundColor = '';
+        }, 1000);
+      } catch (error) {
+        // 恢复按钮状态
+        btn.innerHTML = originalText;
+        btn.classList.remove('btn-processing');
+        // 添加错误动画
+        btn.style.backgroundColor = '#ef4444';
+        setTimeout(() => {
+          btn.style.backgroundColor = '';
+        }, 1000);
+        // 错误提示
+        showToast('解码失败，请检查输入的Base64字符串是否正确', 'error');
+      }
+    }, 300); // 模拟处理时间
+  });
+
+  // 清空功能
+  document.getElementById('clearEncodeBtn').addEventListener('click', () => {
+    document.getElementById('encodeInput').value = '';
+    document.getElementById('encodeOutput').value = '';
+    showToast('已清空编码内容', 'info');
+  });
+
+  document.getElementById('clearDecodeBtn').addEventListener('click', () => {
+    document.getElementById('decodeInput').value = '';
+    document.getElementById('decodeOutput').value = '';
+    showToast('已清空解码内容', 'info');
+  });
+
+  // 复制功能
+  document.getElementById('copyEncodeBtn').addEventListener('click', () => {
+    const output = document.getElementById('encodeOutput');
+    if (output.value) {
+      output.select();
+      document.execCommand('copy');
+      // 添加成功反馈
+      const btn = document.getElementById('copyEncodeBtn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>已复制';
+      btn.style.backgroundColor = '#10b981';
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.style.backgroundColor = '';
+      }, 1000);
+      showToast('编码结果已复制', 'success');
+    } else {
+      showToast('没有内容可供复制', 'warning');
+    }
+  });
+
+  document.getElementById('copyDecodeBtn').addEventListener('click', () => {
+    const output = document.getElementById('decodeOutput');
+    if (output.value) {
+      output.select();
+      document.execCommand('copy');
+      // 添加成功反馈
+      const btn = document.getElementById('copyDecodeBtn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>已复制';
+      btn.style.backgroundColor = '#10b981';
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.style.backgroundColor = '';
+      }, 1000);
+      showToast('解码结果已复制', 'success');
+    } else {
+      showToast('没有内容可供复制', 'warning');
+    }
+  });
+
+  // 下载功能
+  function downloadFile(content, filename) {
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById('downloadEncodeBtn').addEventListener('click', () => {
+    const content = document.getElementById('encodeOutput').value;
+    if (content) {
+      downloadFile(content, 'base64_encoded.txt');
+      // 添加成功反馈
+      const btn = document.getElementById('downloadEncodeBtn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>已下载';
+      btn.style.backgroundColor = '#10b981';
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.style.backgroundColor = '';
+      }, 1000);
+      showToast('编码结果已下载', 'success');
+    } else {
+      showToast('没有内容可供下载', 'warning');
+    }
+  });
+
+  document.getElementById('downloadDecodeBtn').addEventListener('click', () => {
+    const content = document.getElementById('decodeOutput').value;
+    if (content) {
+      downloadFile(content, 'decoded_content.txt');
+      // 添加成功反馈
+      const btn = document.getElementById('downloadDecodeBtn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>已下载';
+      btn.style.backgroundColor = '#10b981';
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.style.backgroundColor = '';
+      }, 1000);
+      showToast('解码结果已下载', 'success');
+    } else {
+      showToast('没有内容可供下载', 'warning');
+    }
+  });
+</script>
+
+C93BDC78EBB83EAA
+
+<style type="text/tailwindcss">
+  @layer utilities {
+
+      .textarea-auto-height {
+        min-height: 150px;
+        resize: vertical;
+      }
+      .btn-processing {
+        background-color: #8b5cf6;
+        color: white;
+        animation: pulse 1.5s infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.8; }
+      }
+    }
+  </style>

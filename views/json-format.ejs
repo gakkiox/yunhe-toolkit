@@ -1,0 +1,247 @@
+<div class="mx-auto">
+
+  <!-- JSON格式化工具卡片 -->
+  <div class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow mb-8">
+    <div class="flex items-center gap-2 mb-5">
+      <div
+        class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-primary-light flex items-center justify-center text-white text-lg">
+        <i class="fa-solid fa-code"></i>
+      </div>
+      <h2 class="text-xl font-bold">JSON格式化工具</h2>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- 输入区域 -->
+      <div>
+        <div class="flex justify-between items-center mb-2">
+          <label class="font-medium text-slate-700 dark:text-slate-300">输入JSON</label>
+          <button id="clearInput" class="text-sm text-red-500 hover:text-red-700 dark:hover:text-red-400">
+            <i class="fa-solid fa-trash mr-1"></i>清空
+          </button>
+        </div>
+        <textarea id="inputJson" rows="15"
+          class="w-full p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none font-mono text-sm"
+          placeholder='请输入JSON数据，例如：{"name": "张三", "age": 30, "city": "北京"}'></textarea>
+
+        <div class="flex flex-wrap gap-3 mt-4">
+          <button id="formatBtn"
+            class="px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-light transition-colors flex items-center">
+            <i class="fa-solid fa-indent mr-2"></i>格式化
+          </button>
+          <button id="compressBtn"
+            class="px-4 py-2.5 bg-secondary text-white rounded-lg hover:bg-opacity-90 transition-colors flex items-center">
+            <i class="fa-solid fa-compress mr-2"></i>压缩
+          </button>
+          <button id="validateBtn"
+            class="px-4 py-2.5 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center">
+            <i class="fa-solid fa-check mr-2"></i>验证
+          </button>
+        </div>
+      </div>
+
+      <!-- 输出区域 -->
+      <div>
+        <div class="flex justify-between items-center mb-2">
+          <label class="font-medium text-slate-700 dark:text-slate-300">格式化结果</label>
+          <button id="copyOutput" class="text-sm text-primary hover:text-primary-light flex items-center">
+            <i class="fa-solid fa-copy mr-1"></i>复制
+          </button>
+        </div>
+        <div id="outputJson"
+          class="w-full p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm min-h-[240px] max-h-[400px] overflow-auto font-mono text-sm whitespace-pre-wrap break-all">
+          <!-- 格式化后的JSON将显示在这里 -->
+        </div>
+
+        <div class="mt-4">
+          <div class="flex items-center gap-2 mb-2">
+            <i class="fa-solid fa-info-circle text-slate-500 dark:text-slate-400"></i>
+            <span class="text-sm text-slate-600 dark:text-slate-400">状态信息</span>
+          </div>
+          <div id="statusInfo"
+            class="text-sm text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-700 p-3 rounded-lg">
+            等待输入...
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 工具说明 -->
+  <div class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow mb-8">
+    <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
+      <i class="fa-solid fa-lightbulb text-primary"></i>
+      使用说明
+    </h3>
+    <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+      <li class="flex items-start gap-2">
+        <i class="fa-solid fa-check-circle text-green-500 mt-0.5"></i>
+        <span>支持JSON格式化、压缩和语法验证</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <i class="fa-solid fa-check-circle text-green-500 mt-0.5"></i>
+        <span>格式化后自动语法高亮，不同数据类型显示不同颜色</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <i class="fa-solid fa-check-circle text-green-500 mt-0.5"></i>
+        <span>支持一键复制格式化结果</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <i class="fa-solid fa-check-circle text-green-500 mt-0.5"></i>
+        <span>完全响应式设计，完美适配移动端设备</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 页脚 -->
+  <footer
+    class="mt-12 pt-6 border-t border-slate-200 dark:border-slate-700 text-center text-sm text-slate-500 dark:text-slate-400">
+    <p>&copy; 2024 云河工具站 - 免费在线工具集合</p>
+    <p class="mt-1">随时随地为您提供便捷的工具服务</p>
+  </footer>
+</div>
+
+C93BDC78EBB83EAA
+
+<script>
+  // JSON格式化工具功能
+const inputJson = document.getElementById('inputJson');
+const outputJson = document.getElementById('outputJson');
+const formatBtn = document.getElementById('formatBtn');
+const compressBtn = document.getElementById('compressBtn');
+const validateBtn = document.getElementById('validateBtn');
+const clearInput = document.getElementById('clearInput');
+const copyOutput = document.getElementById('copyOutput');
+
+// 语法高亮函数
+function syntaxHighlight(json) {
+  if (typeof json !== 'string') return '';
+  
+  return json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function(match) {
+      let cls = 'json-punctuation'; // 默认标点符号
+      
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) {
+          cls = 'json-key'; // 键名
+        } else {
+          cls = 'json-string'; // 字符串值
+        }
+      } else if (/true|false/.test(match)) {
+        cls = 'json-boolean'; // 布尔值
+      } else if (/null/.test(match)) {
+        cls = 'json-null'; // null值
+      } else if (/^-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?$/.test(match)) {
+        cls = 'json-number'; // 数字
+      }
+      
+      return '<span class="' + cls + '">' + match + '</span>';
+    });
+}
+
+// 格式化JSON
+function formatJson() {
+  try {
+    const input = inputJson.value.trim();
+    if (!input) {
+      showToast('请输入JSON数据', 'warning');
+      return;
+    }
+    
+    const parsed = JSON.parse(input);
+    const formatted = JSON.stringify(parsed, null, 2);
+    outputJson.innerHTML = syntaxHighlight(formatted);
+    showToast('格式化成功！', 'success');
+  } catch (error) {
+    showToast(`格式化失败: ${error.message}`, 'error');
+  }
+}
+
+// 压缩JSON
+function compressJson() {
+  try {
+    const input = inputJson.value.trim();
+    if (!input) {
+      showToast('请输入JSON数据', 'warning');
+      return;
+    }
+    
+    const parsed = JSON.parse(input);
+    const compressed = JSON.stringify(parsed);
+    outputJson.innerHTML = syntaxHighlight(compressed);
+    showToast('压缩成功！', 'success');
+  } catch (error) {
+    showToast(`压缩失败: ${error.message}`, 'error');
+  }
+}
+
+// 验证JSON
+function validateJson() {
+  try {
+    const input = inputJson.value.trim();
+    if (!input) {
+      showToast('请输入JSON数据', 'warning');
+      return;
+    }
+    
+    JSON.parse(input);
+    showToast('JSON格式有效！', 'success');
+  } catch (error) {
+    showToast(`JSON格式无效: ${error.message}`, 'error');
+  }
+}
+
+// 清空输入
+function clearInputField() {
+  inputJson.value = '';
+  outputJson.innerHTML = '';
+  showToast('已清空', 'info');
+}
+
+// 复制输出
+async function copyOutputText() {
+  try {
+    const text = outputJson.innerText || outputJson.textContent;
+    await navigator.clipboard.writeText(text);
+    showToast('已复制到剪贴板！', 'success');
+  } catch (err) {
+    showToast('复制失败，请手动复制', 'error');
+  }
+}
+
+// 事件监听器
+formatBtn.addEventListener('click', formatJson);
+compressBtn.addEventListener('click', compressJson);
+validateBtn.addEventListener('click', validateJson);
+clearInput.addEventListener('click', clearInputField);
+copyOutput.addEventListener('click', copyOutputText);
+
+// 输入框实时验证（可选）
+inputJson.addEventListener('input', () => {
+  if (inputJson.value.trim() === '') {
+    outputJson.innerHTML = '';
+  }
+});
+</script>
+
+C93BDC78EBB83EAA
+
+  <style type="text/tailwindcss">
+    @layer utilities {
+      
+      /* JSON 语法高亮 */
+      .json-string { color: #0f9d58; }
+      .json-number { color: #db4437; }
+      .json-boolean { color: #ff6d01; }
+      .json-null { color: #757575; }
+      .json-key { color: #4285f4; font-weight: bold; }
+      .json-punctuation { color: #202124; }
+      
+      /* 暗黑模式下的 JSON 高亮 */
+      .dark .json-string { color: #67e867; }
+      .dark .json-number { color: #f87171; }
+      .dark .json-boolean { color: #fb923c; }
+      .dark .json-null { color: #9ca3af; }
+      .dark .json-key { color: #60a5fa; }
+      .dark .json-punctuation { color: #e5e7eb; }
+    }
+  </style>
