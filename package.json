@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon ./app.js",
     "start": "node ./app.js",
+    "stop": "lsof -t -i :5412 | xargs -r kill -9",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

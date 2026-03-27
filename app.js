@@ -158,8 +158,10 @@ app.get('/sitemap.xml', async (req, res) => {
     // 1. 你的链接列表（必须至少1个）
     const links = [
       { url: '/', changefreq: 'daily', priority: 1.0 },
-      { url: '/image-converter', changefreq: 'monthly', priority: 0.8 },
-      { url: '/image-compressor', changefreq: 'weekly', priority: 0.7 },
+      { url: '/image-converter', changefreq: 'weekly', priority: 0.8 },
+      { url: '/image-compressor', changefreq: 'weekly', priority: 0.8 },
+      { url: '/base64', changefreq: 'weekly', priority: 0.8 },
+      { url: '/json-format', changefreq: 'weekly', priority: 0.8 },
     ];
 
     // 2. 创建流
