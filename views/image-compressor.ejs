@@ -111,6 +111,8 @@
   </div>
 </div>
 
+C93BDC78EBB83EAA
+
 <script>
   // DOM 元素获取
   const fileInput = document.getElementById('fileInput');
@@ -341,8 +343,8 @@
 
   // 更新进度
   function updateProgress(percent) {
-    progressBarFill.style.width = \`${percent}%\`;
-    progressText.textContent = \`正在压缩... \${Math.round(percent)}%\`;
+    progressBarFill.style.width = `${percent}%`;
+    progressText.textContent = `正在压缩... ${Math.round(percent)}%`;
   }
 
   // 下载全部按钮事件
@@ -353,7 +355,7 @@
       const url = result.compressedUrl;
       const a = document.createElement('a');
       a.href = url;
-      a.download = \`compressed_\${index+1}_\${result.originalFile.name}\`;
+      a.download = `compressed_${index+1}_${result.originalFile.name}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

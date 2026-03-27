@@ -111,6 +111,10 @@
   </div>
 </div>
 
+
+
+C93BDC78EBB83EAA
+
 <script>
   // DOM 元素获取
   const fileInput = document.getElementById('fileInput');
@@ -411,7 +415,7 @@
       const url = result.convertedUrl;
       const a = document.createElement('a');
       a.href = url;
-      a.download = \`converted_\${index+1}_\${result.originalFile.name.replace(/\.[^/.]+$/, "")}.\${result.extension.toLowerCase()}\`;
+      a.download = `converted_${index+1}_${result.originalFile.name.replace(/\.[^/.]+$/, "")}.${result.extension.toLowerCase()}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

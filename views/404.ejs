@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - 页面未找到</title>
+    <style>
+        /* 基础重置与字体 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8f9fc; /* 柔和的背景色 */
+            color: #333;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* 主容器 */
+        .error-container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        /* 404 大号数字 */
+        .error-code {
+            font-size: 8rem;
+            font-weight: 900;
+            color: #e2e8f0;
+            line-height: 1;
+            margin-bottom: -20px;
+            position: relative;
+            z-index: 0;
+            font-family: 'Arial Black', sans-serif;
+            letter-spacing: -5px;
+        }
+
+        /* 插画容器 */
+        .error-illustration {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .error-illustration svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* 文本内容 */
+        .error-message h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+
+        .error-message p {
+            font-size: 1rem;
+            color: #718096;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
+        /* 按钮组 */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            text-decoration: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        /* 主按钮 */
+        .btn-primary {
+            background-color: #4f46e5; /* 品牌主色 */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: #4338ca;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px -1px rgba(79, 70, 229, 0.3);
+        }
+
+        /* 次要按钮 */
+        .btn-secondary {
+            background-color: white;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f7fafc;
+            border-color: #cbd5e0;
+            color: #2d3748;
+        }
+
+        /* 动画定义 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 480px) {
+            .error-code {
+                font-size: 5rem;
+                letter-spacing: -2px;
+            }
+            
+            .error-illustration {
+                width: 150px;
+                height: 150px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="error-container">
+        <!-- 背景大数字 -->
+        <div class="error-code">404</div>
+
+        <!-- 插画 (使用内联SVG) -->
+        <div class="error-illustration">
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <!-- 简单的迷路宇航员/星球插画风格 -->
+                <circle cx="100" cy="100" r="90" fill="#e0e7ff" />
+                <path d="M60 130 Q 100 180 140 130" fill="none" stroke="#4f46e5" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="100" cy="80" r="30" fill="#4f46e5" />
+                <circle cx="100" cy="80" r="35" fill="none" stroke="#4f46e5" stroke-width="2" opacity="0.5"/>
+                <path d="M85 70 Q 100 60 115 70" fill="none" stroke="white" stroke-width="2"/>
+                <circle cx="90" cy="75" r="2" fill="white"/>
+                <circle cx="110" cy="75" r="2" fill="white"/>
+                <!-- 装饰星星 -->
+                <path d="M160 40 L165 50 L175 50 L167 58 L170 70 L160 62 L150 70 L153 58 L145 50 L155 50 Z" fill="#fbbf24" />
+                <circle cx="40" cy="160" r="5" fill="#cbd5e0" />
+            </svg>
+        </div>
+
+        <!-- 文字信息 -->
+        <div class="error-message">
+            <h2>哎呀，页面走丢了</h2>
+            <p>抱歉，我们找不到您请求的页面。<br>它可能已被删除、重命名或暂时不可用。</p>
+        </div>
+
+        <!-- 按钮操作 -->
+        <div class="action-buttons">
+            <a href="/" class="btn btn-primary">返回首页</a>
+            <a href="javascript:history.back()" class="btn btn-secondary">返回上一页</a>
+        </div>
+    </div>
+
+</body>
+</html>
