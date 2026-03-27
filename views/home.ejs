@@ -1,0 +1,44 @@
+
+
+<!-- 热门工具 -->
+<section class="mb-10">
+  <h2 class="text-xl font-bold mb-5 flex items-center gap-2 before:content-[''] before:w-1.5 before:h-6 before:bg-primary before:rounded-sm">热门推荐工具</h2>
+  <div class="tool-grid">
+    <% tools.forEach(tool => { %>
+    <a href="/<%= tool.id %>" class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow card-hover">
+      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary-light flex items-center justify-center text-white text-xl mb-3">
+        <i class="fa-solid <%= tool.icon %>"></i>
+      </div>
+      <h3 class="text-lg font-semibold mb-1"><%= tool.title %></h3>
+      <p class="text-sm text-slate-500 dark:text-slate-400"><%= tool.description %></p>
+    </a>
+    <% }); %>
+  </div>
+</section>
+
+<!-- 开发工具 -->
+<section>
+  <h2 class="text-xl font-bold mb-5 flex items-center gap-2 before:content-[''] before:w-1.5 before:h-6 before:bg-primary before:rounded-sm">开发工具</h2>
+  <div class="tool-grid">
+    <a onclick="showToast('正在开发中，敬请期待！', 'info')" href="#" class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow card-hover">
+      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary-light flex items-center justify-center text-white text-xl mb-3">
+        <i class="fa-solid fa-code"></i>
+      </div>
+      <h3 class="text-lg font-semibold mb-1">HTML格式化</h3>
+      <p class="text-sm text-slate-500 dark:text-slate-400">格式化HTML代码，一键排版美化</p>
+    </a>
+    <a onclick="showToast('正在开发中，敬请期待！', 'info')" href="#" class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow card-hover">
+      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary-light flex items-center justify-center text-white text-xl mb-3">
+        <i class="fa-brands fa-css3-alt"></i>
+      </div>
+      <h3 class="text-lg font-semibold mb-1">CSS压缩</h3>
+      <p class="text-sm text-slate-500 dark:text-slate-400">压缩CSS代码，提升网页加载速度</p>
+    </a>
+  </div>
+</section>
+
+<!-- 页脚 -->
+<footer class="mt-12 pt-6 border-t border-slate-200 dark:border-slate-700 text-center text-sm text-slate-500 dark:text-slate-400">
+  <p>&copy; 2026 云河工具站 - 免费在线工具集合</p>
+  <p class="mt-1">随时随地为您提供便捷的工具服务</p>
+</footer>

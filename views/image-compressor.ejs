@@ -1,0 +1,387 @@
+
+
+<!-- 压缩工具主体 -->
+<div class="max-w-4xl mx-auto">
+  <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 shadow">
+    
+    <!-- 文件上传区域 -->
+    <div id="uploadArea" class="drop-zone">
+      <i class="fa-solid fa-cloud-arrow-up text-4xl text-slate-400 mb-3"></i>
+      <h3 class="text-lg font-medium mb-1">拖拽图片到此处或点击上传</h3>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">支持 JPG, PNG, WebP 格式，最多可选 10 张</p>
+      <p class="text-xs text-slate-400 dark:text-slate-500">单张最大文件大小: 10MB</p>
+      <input type="file" id="fileInput" accept="image/*" class="hidden" multiple>
+      <button id="browseBtn" class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-light transition-colors">
+        选择图片
+      </button>
+    </div>
+
+    <!-- 已选图片预览 -->
+    <div id="previewArea" class="mt-4 preview-grid hidden">
+      <h3 class="font-medium mb-2 col-span-full">已选择 (<span id="fileCount">0</span>/10)</h3>
+      <div id="previewList" class="col-span-full"></div>
+    </div>
+
+    <!-- 压缩选项 -->
+    <div id="optionsArea" class="mt-6 space-y-4 hidden">
+      <h3 class="font-medium">压缩选项</h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">压缩质量</label>
+          <input type="range" id="qualitySlider" min="10" max="100" value="80" class="w-full">
+          <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400">
+            <span>较小 (更快)</span>
+            <span id="qualityValue">80%</span>
+            <span>较好 (更大)</span>
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">输出格式</label>
+          <select id="formatSelect" class="w-full p-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700">
+            <option value="same">保持原格式</option>
+            <option value="jpg">JPG</option>
+            <option value="png">PNG</option>
+            <option value="webp">WebP</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="compressBtn" class="w-full py-3 bg-secondary text-white rounded-lg hover:opacity-90 transition-opacity font-medium">
+        <i class="fa-solid fa-compress-arrows-alt mr-2"></i>
+        开始批量压缩
+      </button>
+    </div>
+
+    <!-- 进度条 -->
+    <div id="progressArea" class="mt-6 hidden">
+      <h3 class="font-medium mb-2">压缩进度</h3>
+      <div class="progress-bar">
+        <div id="progressBarFill" class="progress-bar-fill"></div>
+      </div>
+      <p id="progressText" class="text-center text-sm mt-2 text-slate-600 dark:text-slate-300">准备中...</p>
+      <p id="progressDetail" class="text-center text-xs mt-1 text-slate-500 dark:text-slate-400"></p>
+    </div>
+
+    <!-- 结果展示区域 -->
+    <div id="resultArea" class="mt-6 hidden">
+      <h3 class="font-medium mb-4">压缩结果</h3>
+      
+      <div id="resultsGrid" class="preview-grid">
+        <!-- 压缩结果项将动态插入这里 -->
+      </div>
+
+      <div class="mt-6 text-center">
+        <button id="downloadAllBtn" class="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-light transition-colors font-medium">
+          <i class="fa-solid fa-download mr-2"></i>
+          下载全部
+        </button>
+        <button id="newCompressionBtn" class="ml-3 px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+          <i class="fa-solid fa-plus mr-1"></i>
+          新压缩
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 特点介绍 -->
+  <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
+      <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-3">
+        <i class="fa-solid fa-layer-group"></i>
+      </div>
+      <h4 class="font-medium mb-1">批量处理</h4>
+      <p class="text-sm text-slate-600 dark:text-slate-400">一次性上传最多10张图片，高效完成批量压缩任务。</p>
+    </div>
+    <div class="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
+      <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-3">
+        <i class="fa-solid fa-sliders"></i>
+      </div>
+      <h4 class="font-medium mb-1">灵活调节</h4>
+      <p class="text-sm text-slate-600 dark:text-slate-400">可自定义压缩质量，批量统一转换输出格式。</p>
+    </div>
+    <div class="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
+      <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-3">
+        <i class="fa-solid fa-bolt"></i>
+      </div>
+      <h4 class="font-medium mb-1">安全高效</h4>
+      <p class="text-sm text-slate-600 dark:text-slate-400">所有处理在本地浏览器完成，保护您的隐私安全。</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // DOM 元素获取
+  const fileInput = document.getElementById('fileInput');
+  const browseBtn = document.getElementById('browseBtn');
+  const uploadArea = document.getElementById('uploadArea');
+  const previewArea = document.getElementById('previewArea');
+  const previewList = document.getElementById('previewList');
+  const fileCount = document.getElementById('fileCount');
+  const optionsArea = document.getElementById('optionsArea');
+  const compressBtn = document.getElementById('compressBtn');
+  const progressArea = document.getElementById('progressArea');
+  const progressBarFill = document.getElementById('progressBarFill');
+  const progressText = document.getElementById('progressText');
+  const progressDetail = document.getElementById('progressDetail');
+  const resultArea = document.getElementById('resultArea');
+  const resultsGrid = document.getElementById('resultsGrid');
+  const downloadAllBtn = document.getElementById('downloadAllBtn');
+  const newCompressionBtn = document.getElementById('newCompressionBtn');
+  const qualitySlider = document.getElementById('qualitySlider');
+  const qualityValue = document.getElementById('qualityValue');
+  const formatSelect = document.getElementById('formatSelect');
+
+  let selectedFiles = [];
+  let compressedResults = [];
+
+  // 文件浏览按钮点击事件
+  browseBtn.addEventListener('click', () => {
+    fileInput.click();
+  });
+
+  // 文件输入变化事件
+  fileInput.addEventListener('change', (e) => {
+    handleFileSelect(Array.from(e.target.files));
+  });
+
+  // 拖拽上传事件
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('drop-zone--over');
+  });
+
+  uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('drop-zone--over');
+  });
+
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('drop-zone--over');
+    handleFileSelect(Array.from(e.dataTransfer.files));
+  });
+
+  // 处理文件选择
+  function handleFileSelect(files) {
+    // 过滤出图片文件并检查数量
+    const imageFiles = files.filter(file => file.type.match('image.*') && file.size <= 10 * 1024 * 1024);
+    const totalFiles = selectedFiles.length + imageFiles.length;
+    
+    if (totalFiles > 10) {
+      alert(`最多只能选择10张图片，当前已选择 ${selectedFiles.length} 张，本次添加 ${imageFiles.length} 张，总计超出了限制。`);
+      return;
+    }
+
+    // 添加新文件到数组
+    selectedFiles.push(...imageFiles.slice(0, 10 - selectedFiles.length));
+
+    renderPreviewList();
+    updateFileCount();
+
+    if (selectedFiles.length > 0) {
+      optionsArea.classList.remove('hidden');
+    }
+  }
+
+  // 渲染预览列表
+  function renderPreviewList() {
+    previewList.innerHTML = '';
+    selectedFiles.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const item = document.createElement('div');
+        item.className = 'preview-item';
+        item.innerHTML = `
+          <img src="${e.target.result}" class="preview-img" alt="Preview ${index}">
+          <div class="remove-btn" data-index="${index}">&times;</div>
+          <div class="preview-info">${file.name}<br>${formatFileSize(file.size)}</div>
+        `;
+        previewList.appendChild(item);
+
+        // 添加移除按钮事件
+        item.querySelector('.remove-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          removeFile(index);
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+    previewArea.classList.remove('hidden');
+  }
+
+  // 移除文件
+  function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    renderPreviewList();
+    updateFileCount();
+
+    if (selectedFiles.length === 0) {
+      optionsArea.classList.add('hidden');
+    }
+  }
+
+  // 更新文件计数
+  function updateFileCount() {
+    fileCount.textContent = selectedFiles.length;
+  }
+
+  // 格式化文件大小
+  function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  // 质量滑块变化事件
+  qualitySlider.addEventListener('input', () => {
+    qualityValue.textContent = `${qualitySlider.value}%`;
+  });
+
+  // 开始批量压缩按钮事件
+  compressBtn.addEventListener('click', async () => {
+    if (selectedFiles.length === 0) return;
+
+    // 显示进度区域
+    progressArea.classList.remove('hidden');
+    resultArea.classList.add('hidden');
+    resultsGrid.innerHTML = ''; // 清空上次结果
+    
+    compressedResults = []; // 重置结果数组
+
+    try {
+      let processed = 0;
+      const total = selectedFiles.length;
+
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        
+        // 更新进度详情
+        progressDetail.textContent = `正在处理: ${file.name}`;
+        
+        // 模拟压缩进度
+        updateProgress(((i) / total) * 100);
+
+        // 实际的图片压缩逻辑 (模拟)
+        await new Promise(resolve => setTimeout(resolve, 800)); // 模拟单张图片处理耗时
+
+        // 生成压缩后图片 (模拟数据)
+        const compressedBlob = await simulateCompression(file, qualitySlider.value, formatSelect.value);
+        const compressedUrl = URL.createObjectURL(compressedBlob);
+        
+        // 存储结果
+        const originalSize = file.size;
+        const compressedSize = compressedBlob.size;
+        const reduction = ((1 - compressedSize / originalSize) * 100).toFixed(1);
+        
+        compressedResults.push({
+          originalFile: file,
+          compressedBlob: compressedBlob,
+          compressedUrl: compressedUrl,
+          originalSize: originalSize,
+          compressedSize: compressedSize,
+          reduction: reduction
+        });
+
+        processed++;
+        updateProgress((processed / total) * 100);
+      }
+
+      progressText.textContent = '全部压缩完成！';
+      progressDetail.textContent = '';
+
+      // 渲染结果
+      renderResults();
+
+      // 显示结果区域
+      setTimeout(() => {
+        resultArea.classList.remove('hidden');
+        progressArea.classList.add('hidden');
+      }, 500);
+
+    } catch (error) {
+      console.error('批量压缩失败:', error);
+      progressText.textContent = '压缩过程中出现错误，请重试。';
+      progressDetail.textContent = '';
+    }
+  });
+
+  // 模拟压缩函数 (实际项目中会使用如 canvas.toBlob 或专门的库)
+  async function simulateCompression(file, quality, format) {
+    // 这里仅做演示，返回一个与原文件相同但大小略小的 blob
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        // 创建一个假的压缩文件，大小按质量比例减少
+        const qualityFactor = parseInt(quality) / 100;
+        const fakeCompressedSize = Math.max(file.size * qualityFactor * 0.8, 1024); // 最小1KB
+        resolve(new Blob([new Uint8Array(fakeCompressedSize)], {type: file.type}));
+      }, 500);
+    });
+  }
+
+  // 渲染压缩结果
+  function renderResults() {
+      resultsGrid.innerHTML = '';
+      compressedResults.forEach((result, index) => {
+          const item = document.createElement('div');
+          item.className = 'preview-item';
+          item.innerHTML = `
+            <img src="${result.compressedUrl}" class="preview-img" alt="Compressed ${index}">
+            <div class="preview-info">
+              ${result.originalFile.name}<br>
+              <span class="text-green-600 dark:text-green-400">-\${result.reduction}%</span><br>
+              ${formatFileSize(result.compressedSize)}
+            </div>
+          `;
+          resultsGrid.appendChild(item);
+      });
+  }
+
+  // 更新进度
+  function updateProgress(percent) {
+    progressBarFill.style.width = \`${percent}%\`;
+    progressText.textContent = \`正在压缩... \${Math.round(percent)}%\`;
+  }
+
+  // 下载全部按钮事件
+  downloadAllBtn.addEventListener('click', () => {
+    if (compressedResults.length === 0) return;
+    
+    compressedResults.forEach((result, index) => {
+      const url = result.compressedUrl;
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = \`compressed_\${index+1}_\${result.originalFile.name}\`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      // 不立即 revoke URL，因为可能有多次下载
+    });
+
+    // 稍后清理 URL 对象
+    setTimeout(() => {
+      compressedResults.forEach(result => {
+        URL.revokeObjectURL(result.compressedUrl);
+      });
+    }, 1000);
+  });
+
+  // 新压缩按钮事件
+  newCompressionBtn.addEventListener('click', () => {
+    // 重置所有状态
+    fileInput.value = '';
+    selectedFiles = [];
+    compressedResults = [];
+    
+    previewList.innerHTML = '';
+    previewArea.classList.add('hidden');
+    optionsArea.classList.add('hidden');
+    progressArea.classList.add('hidden');
+    resultArea.classList.add('hidden');
+    resultsGrid.innerHTML = '';
+    
+    updateFileCount();
+  });
+</script>

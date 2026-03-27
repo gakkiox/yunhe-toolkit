@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="云河工具站 - 提供免费在线工具集合，包括JSON格式化、单位换算、图片压缩、密码生成等多种实用工具，随时随地便捷使用">
+  <meta name="keywords" content="在线工具,免费工具,JSON格式化,单位换算,图片压缩,密码生成,开发工具,文本处理">
+  <title>云河工具站 - 免费在线工具集合</title>
+  
+  <!-- 引入 Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入 Font Awesome 图标 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Tailwind 配置：自定义主题色 + 暗黑模式 -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#4f46e5',
+            'primary-light': '#6366f1',
+            secondary: '#10b981',
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-hover {
+        @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary;
+      }
+      .nav-active {
+        @apply bg-primary text-white;
+      }
+      .tool-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen transition-colors">
+
+  <div class="flex flex-col min-h-screen">
+    <!-- 移动端顶部导航 -->
+    <header class="lg:hidden bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-4 sticky top-0 z-40">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 text-primary text-lg font-bold">
+          <i class="fa-solid fa-tools text-xl"></i>
+          <span>云河工具站</span>
+        </div>
+        <button id="mobileMenuBtn" class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="flex flex-1">
+      <!-- 侧边栏 -->
+      <aside id="sidebar" class="fixed left-0 top-0 h-screen w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 p-6 overflow-y-auto transform -translate-x-full lg:translate-x-0 transition-transform z-50">
+        <div class="flex items-center gap-2 text-primary text-xl font-bold pb-5 border-b border-slate-200 dark:border-slate-700 mb-6">
+          <i class="fa-solid fa-tools text-2xl"></i>
+          <span>云河工具站</span>
+        </div>
+
+        <p class="text-xs uppercase text-slate-500 dark:text-slate-400 mb-2 mt-4 tracking-wider">主导航</p>
+        <ul class="space-y-1 mb-6">
+          <li><a href="#" class="nav-active flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm"><i class="w-5 text-center fa-solid fa-home"></i>全部工具</a></li>
+          <li><a href="#" class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i class="w-5 text-center fa-solid fa-star"></i>我的收藏</a></li>
+          <li><a href="#" class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i class="w-5 text-center fa-solid fa-history"></i>最近使用</a></li>
+        </ul>
+
+        <p class="text-xs uppercase text-slate-500 dark:text-slate-400 mb-2 mt-4 tracking-wider">工具分类</p>
+        <ul class="space-y-1">
+          <li><a href="#" class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i class="w-5 text-center fa-solid fa-calculator"></i>计算转换</a></li>
+          <li><a href="#" class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i class="w-5 text-center fa-solid fa-code"></i>开发工具</a></li>
+          <li><a href="#" class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i class="w-5 text-center fa-solid fa-image"></i>图片处理</a></li>
+          <li><a href="#" class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i class="w-5 text-center fa-solid fa-text-height"></i>文本处理</a></li>
+          <li><a href="#" class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i class="w-5 text-center fa-solid fa-lock"></i>加密安全</a></li>
+        </ul>
+      </aside>
+
+      <!-- 主内容区 -->
+      <main class="flex-1 lg:ml-64 p-4 md:p-6">
+        <!-- 桌面端顶部栏 -->
+        <div class="hidden lg:flex flex-wrap items-center justify-between gap-4 mb-8">
+          <button id="menuBtn" class="w-11 h-11 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+
+          <div class="relative flex-1 max-w-md">
+            <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="text" placeholder="搜索工具（如：JSON格式化、单位换算、图片压缩）" 
+              class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm outline-none">
+          </div>
+
+          <button id="themeToggle" class="w-11 h-11 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+            <i class="fa-solid fa-moon dark:hidden"></i>
+            <i class="fa-solid fa-sun hidden dark:inline-block"></i>
+          </button>
+        </div>
+
+        <!-- 移动端顶部栏 -->
+        <div class="lg:hidden flex items-center gap-3 mb-6">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="text" placeholder="搜索工具..." 
+              class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm outline-none text-sm">
+          </div>
+          
+          <button id="mobileThemeToggle" class="w-10 h-10 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+            <i class="fa-solid fa-moon dark:hidden"></i>
+            <i class="fa-solid fa-sun hidden dark:inline-block"></i>
+          </button>
+        </div>
+
+        <!-- 热门工具 -->
+        <section class="mb-10">
+          <h2 class="text-xl font-bold mb-5 flex items-center gap-2 before:content-[''] before:w-1.5 before:h-6 before:bg-primary before:rounded-sm">热门推荐工具</h2>
+          <div class="tool-grid">
+            <a href="#" class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow card-hover">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary-light flex items-center justify-center text-white text-xl mb-3">
+                <i class="fa-solid fa-code"></i>
+              </div>
+              <h3 class="text-lg font-semibold mb-1">JSON格式化</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400">一键格式化、压缩、校验JSON代码，支持高亮显示</p>
+            </a>
+
+            <a href="#" class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow card-hover">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary-light flex items-center justify-center text-white text-xl mb-3">
+                <i class="fa-solid fa-calculator"></i>
+              </div>
+              <h3 class="text-lg font-semibold mb-1">单位换算</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400">长度、重量、温度、时间、速度等全维度单位转换</p>
+            </a>
+
+            <a href="#" class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow card-hover">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary-light flex items-center justify-center text-white text-xl mb-3">
+                <i class="fa-solid fa-compress"></i>
+              </div>
+              <h3 class="text-lg font-semibold mb-1">图片压缩</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400">无损压缩图片，支持JPG/PNG/WebP格式</p>
+            </a>
+
+            <a href="#" class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow card-hover">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary-light flex items-center justify-center text-white text-xl mb-3">
+                <i class="fa-solid fa-key"></i>
+              </div>
+              <h3 class="text-lg font-semibold mb-1">密码生成</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400">随机生成高强度密码，支持自定义规则</p>
+            </a>
+          </div>
+        </section>
+
+        <!-- 开发工具 -->
+        <section>
+          <h2 class="text-xl font-bold mb-5 flex items-center gap-2 before:content-[''] before:w-1.5 before:h-6 before:bg-primary before:rounded-sm">开发工具</h2>
+          <div class="tool-grid">
+            <a href="#" class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow card-hover">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary-light flex items-center justify-center text-white text-xl mb-3">
+                <i class="fa-solid fa-code"></i>
+              </div>
+              <h3 class="text-lg font-semibold mb-1">HTML格式化</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400">格式化HTML代码，一键排版美化</p>
+            </a>
+            <a href="#" class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow card-hover">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary-light flex items-center justify-center text-white text-xl mb-3">
+                <i class="fa-brands fa-css3-alt"></i>
+              </div>
+              <h3 class="text-lg font-semibold mb-1">CSS压缩</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400">压缩CSS代码，提升网页加载速度</p>
+            </a>
+            <a href="#" class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow card-hover">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary-light flex items-center justify-center text-white text-xl mb-3">
+                <i class="fa-brands fa-js"></i>
+              </div>
+              <h3 class="text-lg font-semibold mb-1">JS格式化</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400">格式化/压缩JavaScript代码</p>
+            </a>
+            <a href="#" class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow card-hover">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary-light flex items-center justify-center text-white text-xl mb-3">
+                <i class="fa-solid fa-database"></i>
+              </div>
+              <h3 class="text-lg font-semibold mb-1">SQL格式化</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400">美化SQL语句，提高可读性</p>
+            </a>
+          </div>
+        </section>
+        
+        <!-- 页脚 -->
+        <footer class="mt-12 pt-6 border-t border-slate-200 dark:border-slate-700 text-center text-sm text-slate-500 dark:text-slate-400">
+          <p>&copy; 2024 云河工具站 - 免费在线工具集合</p>
+          <p class="mt-1">随时随地为您提供便捷的工具服务</p>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // 侧边栏切换
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    
+    function toggleSidebar() {
+      sidebar.classList.toggle('-translate-x-full');
+    }
+    
+    menuBtn?.addEventListener('click', toggleSidebar);
+    mobileMenuBtn?.addEventListener('click', toggleSidebar);
+
+    // 暗黑模式切换
+    const themeToggle = document.getElementById('themeToggle');
+    const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+    
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+    }
+    
+    themeToggle?.addEventListener('click', toggleDarkMode);
+    mobileThemeToggle?.addEventListener('click', toggleDarkMode);
+
+    // 记忆暗黑模式
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.documentElement.classList.add('dark');
+    }
+
+    // 导航点击效果
+    document.querySelectorAll('a[href="#"]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelectorAll('a[href="#"]').forEach(l => l.classList.remove('nav-active'));
+        e.target.closest('a')?.classList.add('nav-active');
+      });
+    });
+    
+    // 点击侧边栏外区域关闭侧边栏
+    document.addEventListener('click', (e) => {
+      if (!sidebar.contains(e.target) && 
+          !mobileMenuBtn?.contains(e.target) &&
+          !menuBtn?.contains(e.target)) {
+        sidebar.classList.add('-translate-x-full');
+      }
+    });
+  </script>
+</body>
+</html>

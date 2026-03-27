@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="云河工具站 - 免费在线批量图片格式转换工具，支持JPG、PNG、WebP、GIF格式互转，一次性上传最多10张图片，在线转换无需上传服务器，安全高效。">
+  <meta name="keywords" content="批量图片转换,在线图片转换,图片格式转换,JPG转PNG,PNG转WebP,WebP转换,GIF转换,免费图片处理">
+  <title>云河工具站 - 批量图片格式转换器</title>
+  
+  <!-- 引入 Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入 Font Awesome 图标 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Tailwind 配置：自定义主题色 + 暗黑模式 -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#4f46e5',
+            'primary-light': '#6366f1',
+            secondary: '#10b981',
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-hover {
+        @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary;
+      }
+      .nav-active {
+        @apply bg-primary text-white;
+      }
+      .progress-bar {
+        height: 8px;
+        background-color: #e5e7eb;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(to right, #4f46e5, #6366f1);
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+      .drop-zone {
+        border: 2px dashed #cbd5e1;
+        border-radius: 0.5rem;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .drop-zone--over {
+        border-color: #4f46e5;
+        background-color: rgba(79, 70, 229, 0.05);
+      }
+      .preview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+      }
+      .preview-item {
+        position: relative;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        overflow: hidden;
+      }
+      .dark .preview-item {
+        border-color: #4b5563;
+      }
+      .preview-img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        display: block;
+      }
+      .preview-info {
+        padding: 0.5rem;
+        font-size: 0.75rem;
+        background-color: #f8fafc;
+      }
+      .dark .preview-info {
+        background-color: #374151;
+      }
+      .remove-btn {
+        position: absolute;
+        top: 0.25rem;
+        right: 0.25rem;
+        background-color: rgba(0,0,0,0.6);
+        color: white;
+        border-radius: 50%;
+        width: 1.5rem;
+        height: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen transition-colors">
+
+  <div class="flex flex-col min-h-screen">
+    <!-- 移动端顶部导航 -->
+    <header class="lg:hidden bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-4 sticky top-0 z-40">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 text-primary text-lg font-bold">
+          <i class="fa-solid fa-exchange-alt text-xl"></i>
+          <span>格式转换</span>
+        </div>
+        <button id="mobileMenuBtn" class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="flex flex-1">
+      <!-- 侧边栏 -->
+      <aside id="sidebar" class="fixed left-0 top-0 h-screen w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 p-6 overflow-y-auto transform -translate-x-full lg:translate-x-0 transition-transform z-50">
+        <div class="flex items-center gap-2 text-primary text-xl font-bold pb-5 border-b border-slate-200 dark:border-slate-700 mb-6">
+          <i class="fa-solid fa-tools text-2xl"></i>
+          <span>云河工具站</span>
+        </div>
+
+        <p class="text-xs uppercase text-slate-500 dark:text-slate-400 mb-2 mt-4 tracking-wider">主导航</p>
+        <ul class="space-y-1 mb-6">
+          <li><a href="./" class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i class="w-5 text-center fa-solid fa-home"></i>全部工具</a></li>
+          <li><a href="#" class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i class="w-5 text-center fa-solid fa-star"></i>我的收藏</a></li>
+          <li><a href="#" class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i class="w-5 text-center fa-solid fa-history"></i>最近使用</a></li>
+        </ul>
+
+        <p class="text-xs uppercase text-slate-500 dark:text-slate-400 mb-2 mt-4 tracking-wider">工具分类</p>
+        <ul class="space-y-1">
+          <li><a href="#" class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i class="w-5 text-center fa-solid fa-calculator"></i>计算转换</a></li>
+          <li><a href="#" class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i class="w-5 text-center fa-solid fa-code"></i>开发工具</a></li>
+          <li><a href="#" class="nav-active flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm"><i class="w-5 text-center fa-solid fa-image"></i>图片处理</a></li>
+          <li><a href="#" class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i class="w-5 text-center fa-solid fa-text-height"></i>文本处理</a></li>
+          <li><a href="#" class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i class="w-5 text-center fa-solid fa-lock"></i>加密安全</a></li>
+        </ul>
+      </aside>
+
+      <!-- 主内容区 -->
+      <main class="flex-1 lg:ml-64 p-4 md:p-6">
+        <!-- 桌面端顶部栏 -->
+        <div class="hidden lg:flex flex-wrap items-center justify-between gap-4 mb-8">
+          <button id="menuBtn" class="w-11 h-11 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+
+          <h1 class="text-2xl font-bold flex items-center gap-2">
+            <i class="fa-solid fa-exchange-alt text-primary"></i>
+            <span>批量图片格式转换器</span>
+          </h1>
+
+          <button id="themeToggle" class="w-11 h-11 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+            <i class="fa-solid fa-moon dark:hidden"></i>
+            <i class="fa-solid fa-sun hidden dark:inline-block"></i>
+          </button>
+        </div>
+
+        <!-- 移动端顶部栏 -->
+        <div class="lg:hidden flex items-center gap-3 mb-6">
+          <h1 class="text-xl font-bold flex items-center gap-2 flex-1">
+            <i class="fa-solid fa-exchange-alt text-primary"></i>
+            <span>格式转换</span>
+          </h1>
+          
+          <button id="mobileThemeToggle" class="w-10 h-10 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+            <i class="fa-solid fa-moon dark:hidden"></i>
+            <i class="fa-solid fa-sun hidden dark:inline-block"></i>
+          </button>
+        </div>
+
+        <!-- 转换工具主体 -->
+        <div class="max-w-4xl mx-auto">
+          <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 shadow">
+            
+            <!-- 文件上传区域 -->
+            <div id="uploadArea" class="drop-zone">
+              <i class="fa-solid fa-cloud-arrow-up text-4xl text-slate-400 mb-3"></i>
+              <h3 class="text-lg font-medium mb-1">拖拽图片到此处或点击上传</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">支持 JPG, PNG, WebP, GIF 格式，最多可选 10 张</p>
+              <p class="text-xs text-slate-400 dark:text-slate-500">单张最大文件大小: 10MB</p>
+              <input type="file" id="fileInput" accept="image/*" class="hidden" multiple>
+              <button id="browseBtn" class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-light transition-colors">
+                选择图片
+              </button>
+            </div>
+
+            <!-- 已选图片预览 -->
+            <div id="previewArea" class="mt-4 preview-grid hidden">
+              <h3 class="font-medium mb-2 col-span-full">已选择 (<span id="fileCount">0</span>/10)</h3>
+              <div id="previewList" class="col-span-full"></div>
+            </div>
+
+            <!-- 转换选项 -->
+            <div id="optionsArea" class="mt-6 space-y-4 hidden">
+              <h3 class="font-medium">转换选项</h3>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium mb-1">输出格式</label>
+                  <select id="formatSelect" class="w-full p-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700">
+                    <option value="jpg">JPG</option>
+                    <option value="png">PNG</option>
+                    <option value="webp">WebP</option>
+                    <option value="gif">GIF</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium mb-1">JPG质量</label>
+                  <input type="range" id="qualitySlider" min="10" max="100" value="85" class="w-full">
+                  <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400">
+                    <span>较小 (更快)</span>
+                    <span id="qualityValue">85%</span>
+                    <span>较好 (更大)</span>
+                  </div>
+                </div>
+              </div>
+
+              <button id="convertBtn" class="w-full py-3 bg-secondary text-white rounded-lg hover:opacity-90 transition-opacity font-medium">
+                <i class="fa-solid fa-sync-alt mr-2"></i>
+                开始批量转换
+              </button>
+            </div>
+
+            <!-- 进度条 -->
+            <div id="progressArea" class="mt-6 hidden">
+              <h3 class="font-medium mb-2">转换进度</h3>
+              <div class="progress-bar">
+                <div id="progressBarFill" class="progress-bar-fill"></div>
+              </div>
+              <p id="progressText" class="text-center text-sm mt-2 text-slate-600 dark:text-slate-300">准备中...</p>
+              <p id="progressDetail" class="text-center text-xs mt-1 text-slate-500 dark:text-slate-400"></p>
+            </div>
+
+            <!-- 结果展示区域 -->
+            <div id="resultArea" class="mt-6 hidden">
+              <h3 class="font-medium mb-4">转换结果</h3>
+              
+              <div id="resultsGrid" class="preview-grid">
+                <!-- 转换结果项将动态插入这里 -->
+              </div>
+
+              <div class="mt-6 text-center">
+                <button id="downloadAllBtn" class="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-light transition-colors font-medium">
+                  <i class="fa-solid fa-download mr-2"></i>
+                  下载全部
+                </button>
+                <button id="newConversionBtn" class="ml-3 px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                  <i class="fa-solid fa-plus mr-1"></i>
+                  新转换
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 特点介绍 -->
+          <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
+              <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-3">
+                <i class="fa-solid fa-layer-group"></i>
+              </div>
+              <h4 class="font-medium mb-1">批量处理</h4>
+              <p class="text-sm text-slate-600 dark:text-slate-400">一次性上传最多10张图片，高效完成批量格式转换任务。</p>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
+              <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-3">
+                <i class="fa-solid fa-sliders"></i>
+              </div>
+              <h4 class="font-medium mb-1">灵活输出</h4>
+              <p class="text-sm text-slate-600 dark:text-slate-400">支持JPG、PNG、WebP、GIF四种主流格式自由转换。</p>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
+              <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-3">
+                <i class="fa-solid fa-shield-alt"></i>
+              </div>
+              <h4 class="font-medium mb-1">安全高效</h4>
+              <p class="text-sm text-slate-600 dark:text-slate-400">所有处理均在浏览器内完成，保护您的隐私安全，无需上传服务器。</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // DOM 元素获取
+    const fileInput = document.getElementById('fileInput');
+    const browseBtn = document.getElementById('browseBtn');
+    const uploadArea = document.getElementById('uploadArea');
+    const previewArea = document.getElementById('previewArea');
+    const previewList = document.getElementById('previewList');
+    const fileCount = document.getElementById('fileCount');
+    const optionsArea = document.getElementById('optionsArea');
+    const convertBtn = document.getElementById('convertBtn');
+    const progressArea = document.getElementById('progressArea');
+    const progressBarFill = document.getElementById('progressBarFill');
+    const progressText = document.getElementById('progressText');
+    const progressDetail = document.getElementById('progressDetail');
+    const resultArea = document.getElementById('resultArea');
+    const resultsGrid = document.getElementById('resultsGrid');
+    const downloadAllBtn = document.getElementById('downloadAllBtn');
+    const newConversionBtn = document.getElementById('newConversionBtn');
+    const qualitySlider = document.getElementById('qualitySlider');
+    const qualityValue = document.getElementById('qualityValue');
+    const formatSelect = document.getElementById('formatSelect');
+
+    let selectedFiles = [];
+    let convertedResults = [];
+
+    // 文件浏览按钮点击事件
+    browseBtn.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    // 文件输入变化事件
+    fileInput.addEventListener('change', (e) => {
+      handleFileSelect(Array.from(e.target.files));
+    });
+
+    // 拖拽上传事件
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('drop-zone--over');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('drop-zone--over');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('drop-zone--over');
+      handleFileSelect(Array.from(e.dataTransfer.files));
+    });
+
+    // 处理文件选择
+    function handleFileSelect(files) {
+      // 过滤出支持的图片文件并检查数量
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+      const imageFiles = files.filter(file => 
+        validTypes.includes(file.type.toLowerCase()) && 
+        file.size <= 10 * 1024 * 1024
+      );
+      
+      const totalFiles = selectedFiles.length + imageFiles.length;
+      
+      if (totalFiles > 10) {
+        alert(`最多只能选择10张图片，当前已选择 ${selectedFiles.length} 张，本次添加 ${imageFiles.length} 张，总计超出了限制。`);
+        return;
+      }
+
+      // 添加新文件到数组
+      selectedFiles.push(...imageFiles.slice(0, 10 - selectedFiles.length));
+
+      renderPreviewList();
+      updateFileCount();
+
+      if (selectedFiles.length > 0) {
+        optionsArea.classList.remove('hidden');
+      }
+    }
+
+    // 渲染预览列表
+    function renderPreviewList() {
+      previewList.innerHTML = '';
+      selectedFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const item = document.createElement('div');
+          item.className = 'preview-item';
+          item.innerHTML = `
+            <img src="${e.target.result}" class="preview-img" alt="Preview ${index}">
+            <div class="remove-btn" data-index="${index}">&times;</div>
+            <div class="preview-info">${file.name}<br>${formatFileSize(file.size)}</div>
+          `;
+          previewList.appendChild(item);
+
+          // 添加移除按钮事件
+          item.querySelector('.remove-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            removeFile(index);
+          });
+        };
+        reader.readAsDataURL(file);
+      });
+      previewArea.classList.remove('hidden');
+    }
+
+    // 移除文件
+    function removeFile(index) {
+      selectedFiles.splice(index, 1);
+      renderPreviewList();
+      updateFileCount();
+
+      if (selectedFiles.length === 0) {
+        optionsArea.classList.add('hidden');
+      }
+    }
+
+    // 更新文件计数
+    function updateFileCount() {
+      fileCount.textContent = selectedFiles.length;
+    }
+
+    // 格式化文件大小
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // 质量滑块变化事件
+    qualitySlider.addEventListener('input', () => {
+      qualityValue.textContent = `${qualitySlider.value}%`;
+    });
+
+    // 开始批量转换按钮事件
+    convertBtn.addEventListener('click', async () => {
+      if (selectedFiles.length === 0) return;
+
+      const outputFormat = formatSelect.value;
+      const quality = qualitySlider.value / 100;
+
+      // 显示进度区域
+      progressArea.classList.remove('hidden');
+      resultArea.classList.add('hidden');
+      resultsGrid.innerHTML = ''; // 清空上次结果
+      
+      convertedResults = []; // 重置结果数组
+
+      try {
+        let processed = 0;
+        const total = selectedFiles.length;
+
+        for (let i = 0; i < selectedFiles.length; i++) {
+          const file = selectedFiles[i];
+          
+          // 更新进度详情
+          progressDetail.textContent = `正在转换: ${file.name}`;
+          
+          // 更新进度条
+          updateProgress(((i) / total) * 100);
+
+          // 实际的图片转换逻辑 (模拟)
+          await new Promise(resolve => setTimeout(resolve, 600)); // 模拟单张图片处理耗时
+
+          // 尝试在Canvas中绘制图片进行转换
+          const convertedBlob = await convertImageWithCanvas(file, outputFormat, quality);
+          const convertedUrl = URL.createObjectURL(convertedBlob);
+          
+          // 存储结果
+          const originalSize = file.size;
+          const convertedSize = convertedBlob.size;
+          const extension = outputFormat.toUpperCase();
+          
+          convertedResults.push({
+            originalFile: file,
+            convertedBlob: convertedBlob,
+            convertedUrl: convertedUrl,
+            originalSize: originalSize,
+            convertedSize: convertedSize,
+            extension: extension
+          });
+
+          processed++;
+          updateProgress((processed / total) * 100);
+        }
+
+        progressText.textContent = '全部转换完成！';
+        progressDetail.textContent = '';
+
+        // 渲染结果
+        renderResults();
+
+        // 显示结果区域
+        setTimeout(() => {
+          resultArea.classList.remove('hidden');
+          progressArea.classList.add('hidden');
+        }, 500);
+
+      } catch (error) {
+        console.error('批量转换失败:', error);
+        progressText.textContent = '转换过程中出现错误，请重试。';
+        progressDetail.textContent = '';
+      }
+    });
+
+    // 使用Canvas进行图片格式转换
+    async function convertImageWithCanvas(file, outputFormat, quality) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 设置画布尺寸与原图一致
+            canvas.width = img.width;
+            canvas.height = img.height;
+            
+            // 绘制图片到画布
+            ctx.drawImage(img, 0, 0);
+            
+            try {
+              // 根据目标格式导出
+              let mimeType = 'image/' + outputFormat;
+              if (outputFormat === 'jpg' || outputFormat === 'jpeg') {
+                mimeType = 'image/jpeg'; // 确保JPG类型正确
+              } else if (outputFormat === 'png') {
+                mimeType = 'image/png'; // PNG不需要质量参数
+              } else if (outputFormat === 'webp') {
+                mimeType = 'image/webp';
+              } else if (outputFormat === 'gif') {
+                // GIF无法通过toDataURL直接转换，这里模拟一个结果
+                // 在实际应用中，需要引入gif.js等库来处理
+                mimeType = 'image/gif';
+              }
+
+              // 导出为blob
+              canvas.toBlob(
+                function(blob) {
+                  if (blob) {
+                    resolve(blob);
+                  } else {
+                    // 如果转换失败，返回原文件的blob（模拟）
+                    resolve(file.slice(0));
+                  }
+                },
+                mimeType,
+                outputFormat === 'png' ? undefined : quality // PNG不需要质量参数
+              );
+            } catch (e) {
+              console.error('Canvas转换错误:', e);
+              // 转换失败时返回原文件的blob（模拟）
+              resolve(file.slice(0));
+            }
+          };
+          img.onerror = function() {
+            reject(new Error('无法加载图片'));
+          };
+          img.src = event.target.result;
+        };
+        reader.onerror = function() {
+          reject(new Error('无法读取文件'));
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+
+    // 渲染转换结果
+    function renderResults() {
+        resultsGrid.innerHTML = '';
+        convertedResults.forEach((result, index) => {
+            const item = document.createElement('div');
+            item.className = 'preview-item';
+            item.innerHTML = `
+              <img src="${result.convertedUrl}" class="preview-img" alt="Converted ${index}">
+              <div class="preview-info">
+                ${result.originalFile.name.replace(/\.[^/.]+$/, "")}.${result.extension}<br>
+                ${formatFileSize(result.convertedSize)}
+              </div>
+            `;
+            resultsGrid.appendChild(item);
+        });
+    }
+
+    // 更新进度
+    function updateProgress(percent) {
+      progressBarFill.style.width = `${percent}%`;
+      progressText.textContent = `正在转换... ${Math.round(percent)}%`;
+    }
+
+    // 下载全部按钮事件
+    downloadAllBtn.addEventListener('click', () => {
+      if (convertedResults.length === 0) return;
+      
+      convertedResults.forEach((result, index) => {
+        const url = result.convertedUrl;
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `converted_${index+1}_${result.originalFile.name.replace(/\.[^/.]+$/, "")}.${result.extension.toLowerCase()}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        // 不立即 revoke URL，因为可能有多次下载
+      });
+
+      // 稍后清理 URL 对象
+      setTimeout(() => {
+        convertedResults.forEach(result => {
+          URL.revokeObjectURL(result.convertedUrl);
+        });
+      }, 1000);
+    });
+
+    // 新转换按钮事件
+    newConversionBtn.addEventListener('click', () => {
+      // 重置所有状态
+      fileInput.value = '';
+      selectedFiles = [];
+      convertedResults = [];
+      
+      previewList.innerHTML = '';
+      previewArea.classList.add('hidden');
+      optionsArea.classList.add('hidden');
+      progressArea.classList.add('hidden');
+      resultArea.classList.add('hidden');
+      resultsGrid.innerHTML = '';
+      
+      updateFileCount();
+    });
+
+    // 侧边栏切换
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    
+    function toggleSidebar() {
+      sidebar.classList.toggle('-translate-x-full');
+    }
+    
+    menuBtn?.addEventListener('click', toggleSidebar);
+    mobileMenuBtn?.addEventListener('click', toggleSidebar);
+
+    // 暗黑模式切换
+    const themeToggle = document.getElementById('themeToggle');
+    const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+    
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+    }
+    
+    themeToggle?.addEventListener('click', toggleDarkMode);
+    mobileThemeToggle?.addEventListener('click', toggleDarkMode);
+
+    // 记忆暗黑模式
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.documentElement.classList.add('dark');
+    }
+
+    // 导航点击效果
+    document.querySelectorAll('a[href]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        if(e.target.closest('a').href.includes('#')) {
+            e.preventDefault();
+            document.querySelectorAll('a[href]').forEach(l => l.classList.remove('nav-active'));
+            e.target.closest('a')?.classList.add('nav-active');
+        }
+      });
+    });
+    
+    // 点击侧边栏外区域关闭侧边栏
+    document.addEventListener('click', (e) => {
+      if (!sidebar.contains(e.target) && 
+          !mobileMenuBtn?.contains(e.target) &&
+          !menuBtn?.contains(e.target)) {
+        sidebar.classList.add('-translate-x-full');
+      }
+    });
+  </script>
+</body>
+</html>

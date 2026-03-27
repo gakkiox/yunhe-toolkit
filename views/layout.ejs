@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="<%= description %>">
+  <meta name="keywords" content="<%= keywords %>">
+  <title>
+    <%= title %>
+  </title>
+
+  <!-- 引入 Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入 Font Awesome 图标 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta property="og:site_name" content="云河工具站 | YunHe">
+  <meta property="og:title" content="<%= title %>">
+  <meta property="og:description"
+    content="<%= description %>">
+  <meta property="og:image" content="/favicon.ico">
+  <!-- Tailwind 配置：自定义主题色 + 暗黑模式 -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#4f46e5',
+            'primary-light': '#6366f1',
+            secondary: '#10b981',
+          },
+        },
+      }
+    }
+  </script>
+
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-hover {
+        @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary;
+      }
+      .nav-active {
+        @apply bg-primary text-white;
+      }
+      .progress-bar {
+        height: 8px;
+        background-color: #e5e7eb;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(to right, #4f46e5, #6366f1);
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+      .drop-zone {
+        border: 2px dashed #cbd5e1;
+        border-radius: 0.5rem;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .drop-zone--over {
+        border-color: #4f46e5;
+        background-color: rgba(79, 70, 229, 0.05);
+      }
+      .preview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+      }
+      .preview-item {
+        position: relative;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        overflow: hidden;
+      }
+      .dark .preview-item {
+        border-color: #4b5563;
+      }
+      .preview-img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        display: block;
+      }
+      .preview-info {
+        padding: 0.5rem;
+        font-size: 0.75rem;
+        background-color: #f8fafc;
+      }
+      .dark .preview-info {
+        background-color: #374151;
+      }
+      .remove-btn {
+        position: absolute;
+        top: 0.25rem;
+        right: 0.25rem;
+        background-color: rgba(0,0,0,0.6);
+        color: white;
+        border-radius: 50%;
+        width: 1.5rem;
+        height: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+      .tool-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+    }
+          /* 提示组件动画 */
+      .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+      }
+      
+      .toast {
+        background: #ffffff;
+        color: #333;
+        border-radius: 8px;
+        padding: 12px 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        max-width: 300px;
+        width: auto;
+        opacity: 0;
+        transform: translateX(100%);
+        transition: all 0.3s ease;
+        border-left: 4px solid #4f46e5;
+      }
+      
+      .toast.show {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      
+      .toast.success {
+        border-left-color: #10b981;
+      }
+      
+      .toast.error {
+        border-left-color: #ef4444;
+      }
+      
+      .toast.warning {
+        border-left-color: #f59e0b;
+      }
+      
+      .toast.info {
+        border-left-color: #3b82f6;
+      }
+      
+      .toast-content {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      
+      .toast-icon {
+        font-size: 16px;
+      }
+      
+      .toast-message {
+        flex: 1;
+        font-size: 14px;
+      }
+      
+      .toast-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        padding: 0;
+        margin-left: 8px;
+        color: #9ca3af;
+      }
+      
+      .toast-close:hover {
+        color: #6b7280;
+      }
+      
+  </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen transition-colors">
+
+  <div class="flex flex-col min-h-screen">
+    <!-- 移动端顶部导航 -->
+    <header
+      class="lg:hidden bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-4 sticky top-0 z-40">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 text-primary text-lg font-bold">
+          <i class="fa-solid fa-tools text-xl"></i>
+          <span>云河工具站</span>
+        </div>
+        <button id="mobileMenuBtn"
+          class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="flex flex-1">
+      <!-- 侧边栏 -->
+      <aside id="sidebar"
+        class="fixed left-0 top-0 h-screen w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 p-6 overflow-y-auto transform -translate-x-full lg:translate-x-0 transition-transform z-50">
+        <div
+          class="flex items-center gap-2 text-primary text-xl font-bold pb-5 border-b border-slate-200 dark:border-slate-700 mb-6">
+          <i class="fa-solid fa-tools text-2xl"></i>
+          <span>云河工具站</span>
+        </div>
+
+        <p class="text-xs uppercase text-slate-500 dark:text-slate-400 mb-2 mt-4 tracking-wider">主导航</p>
+        <ul class="space-y-1 mb-6">
+          <li><a href="/"
+              class="nav-active flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i
+                class="w-5 text-center fa-solid fa-home"></i>全部工具</a></li>
+          <li><a onclick="showToast('正在开发中，敬请期待！', 'info')" href="#"
+              class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i
+                class="w-5 text-center fa-solid fa-star"></i>我的收藏</a></li>
+          <li><a onclick="showToast('正在开发中，敬请期待！', 'info')" href="#"
+              class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i
+                class="w-5 text-center fa-solid fa-history"></i>最近使用</a></li>
+        </ul>
+
+        <p class="text-xs uppercase text-slate-500 dark:text-slate-400 mb-2 mt-4 tracking-wider">工具分类</p>
+        <ul class="space-y-1">
+          <li><a onclick="showToast('正在开发中，敬请期待！', 'info')" href="#"
+              class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i
+                class="w-5 text-center fa-solid fa-calculator"></i>计算转换</a></li>
+          <li><a onclick="showToast('正在开发中，敬请期待！', 'info')" href="#"
+              class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i
+                class="w-5 text-center fa-solid fa-code"></i>开发工具</a></li>
+          <li><a onclick="showToast('正在开发中，敬请期待！', 'info')" href="#"
+              class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i
+                class="w-5 text-center fa-solid fa-text-height"></i>文本处理</a></li>
+          <li><a onclick="showToast('正在开发中，敬请期待！', 'info')" href="#"
+              class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-primary hover:text-white transition-colors"><i
+                class="w-5 text-center fa-solid fa-lock"></i>加密安全</a></li>
+        </ul>
+      </aside>
+
+      <!-- 主内容区 -->
+      <main class="flex-1 lg:ml-64 p-4 md:p-6">
+        <!-- 桌面端顶部栏 -->
+        <div class="hidden lg:flex flex-wrap items-center justify-between gap-4 mb-8">
+          <button id="menuBtn"
+            class="w-11 h-11 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+
+          <h1 class="text-2xl font-bold flex items-center gap-2">
+            <i class="fa-solid fa-exchange-alt text-primary"></i>
+            <span>
+              <%= title %>
+            </span>
+          </h1>
+
+          <button id="themeToggle"
+            class="w-11 h-11 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+            <i class="fa-solid fa-moon dark:hidden"></i>
+            <i class="fa-solid fa-sun hidden dark:inline-block"></i>
+          </button>
+        </div>
+
+        <!-- 移动端顶部栏 -->
+        <div class="lg:hidden flex items-center gap-3 mb-6">
+          <h1 class="text-xl font-bold flex items-center gap-2 flex-1">
+            <i class="fa-solid fa-exchange-alt text-primary"></i>
+            <span>
+              <%= title %>
+            </span>
+          </h1>
+
+          <button id="mobileThemeToggle"
+            class="w-10 h-10 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+            <i class="fa-solid fa-moon dark:hidden"></i>
+            <i class="fa-solid fa-sun hidden dark:inline-block"></i>
+          </button>
+        </div>
+
+        <!-- 主要内容 -->
+        <%- main %>
+      </main>
+    </div>
+    <!-- 提示组件容器 -->
+    <div id="toastContainer" class="toast-container"></div>
+  </div>
+
+  <script>
+    // 侧边栏切换
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+
+    function toggleSidebar() {
+      sidebar.classList.toggle('-translate-x-full');
+    }
+
+    menuBtn?.addEventListener('click', toggleSidebar);
+    mobileMenuBtn?.addEventListener('click', toggleSidebar);
+
+    // 暗黑模式切换
+    const themeToggle = document.getElementById('themeToggle');
+    const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+    }
+
+    themeToggle?.addEventListener('click', toggleDarkMode);
+    mobileThemeToggle?.addEventListener('click', toggleDarkMode);
+
+    // 记忆暗黑模式
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.documentElement.classList.add('dark');
+    }
+
+    // 导航点击效果
+    document.querySelectorAll('a[href="#"]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelectorAll('a[href="#"]').forEach(l => l.classList.remove('nav-active'));
+        e.target.closest('a')?.classList.add('nav-active');
+      });
+    });
+
+    // 点击侧边栏外区域关闭侧边栏
+    document.addEventListener('click', (e) => {
+      if (!sidebar.contains(e.target) &&
+        !mobileMenuBtn?.contains(e.target) &&
+        !menuBtn?.contains(e.target)) {
+        sidebar.classList.add('-translate-x-full');
+      }
+    });
+
+
+  </script>
+  <script>
+    (function () {
+      // 全局提示组件
+      let toastId = 0;
+      const toastContainer = document.getElementById('toastContainer');
+
+      function showToast(message, type = 'info', duration = 3000) {
+        toastId++;
+        const id = toastId;
+
+        // 创建提示元素
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.id = `toast-${id}`;
+
+        // 获取图标
+        let icon = 'fa-info-circle';
+        switch (type) {
+          case 'success':
+            icon = 'fa-check-circle';
+            break;
+          case 'error':
+            icon = 'fa-exclamation-circle';
+            break;
+          case 'warning':
+            icon = 'fa-exclamation-triangle';
+            break;
+          case 'info':
+            icon = 'fa-info-circle';
+            break;
+        }
+
+        toast.innerHTML = `
+        <div class="toast-content">
+          <i class="toast-icon fa-solid ${icon}"></i>
+          <span class="toast-message">${message}</span>
+          <button class="toast-close" onclick="closeToast(${id})">&times;</button>
+        </div>
+      `;
+
+        // 添加到容器
+        toastContainer.appendChild(toast);
+
+        // 触发显示动画
+        setTimeout(() => {
+          toast.classList.add('show');
+        }, 10);
+
+        // 自动移除
+        if (duration > 0) {
+          setTimeout(() => {
+            closeToast(id);
+          }, duration);
+        }
+
+        return id;
+      }
+      function closeToast(id) {
+        const toast = document.getElementById(`toast-${id}`);
+        if (toast) {
+          toast.classList.remove('show');
+          setTimeout(() => {
+            if (toast.parentNode) {
+              toast.parentNode.removeChild(toast);
+            }
+          }, 300);
+        }
+      }
+      window.closeToast = closeToast;
+      window.showToast = showToast;
+    })()
+
+  </script>
+</body>
+
+</html>
