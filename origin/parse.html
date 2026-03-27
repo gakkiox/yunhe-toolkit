@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF处理工具</title>
+      <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <style>
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+
+        .file-drop-area {
+            border: 2px dashed #cbd5e0;
+            transition: all 0.3s ease;
+        }
+        
+        .file-drop-area.drag-over {
+            background-color: #f7fafc;
+            border-color: #4299e1;
+        }
+        
+        .page-preview {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        .page-preview:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center py-8">
+            <h1 class="text-3xl font-bold text-gray-800">PDF处理工具</h1>
+            <p class="text-gray-600 mt-2">合并、拆分PDF文档或将PDF转换为图片</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- 左侧上传区域 -->
+            <div class="lg:col-span-1 bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">上传PDF文件</h2>
+                
+                <div id="uploadArea" class="file-drop-area rounded-lg p-8 text-center cursor-pointer bg-gray-50 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <p class="mt-2 text-gray-600">拖拽PDF文件到此处或点击上传</p>
+                    <input type="file" id="fileInput" accept=".pdf" multiple class="hidden" />
+                </div>
+                
+                <button id="selectBtn" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition">
+                    选择文件
+                </button>
+                
+                <div id="fileList" class="mt-4 space-y-2 max-h-60 overflow-y-auto"></div>
+            </div>
+
+            <!-- 中间操作面板 -->
+            <div class="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">操作面板</h2>
+                
+                <div class="space-y-6">
+                    <!-- 合并功能 -->
+                    <div class="border-b pb-4">
+                        <h3 class="text-lg font-medium text-gray-700 mb-2">合并PDF</h3>
+                        <button id="mergeBtn" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition">
+                            合并所有文件
+                        </button>
+                    </div>
+                    
+                    <!-- 拆分功能 -->
+                    <div class="border-b pb-4">
+                        <h3 class="text-lg font-medium text-gray-700 mb-2">拆分PDF</h3>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <label for="splitFileSelect" class="text-gray-600">选择文件:</label>
+                            <select id="splitFileSelect" class="flex-1 border border-gray-300 rounded px-2 py-1"></select>
+                        </div>
+                        <button id="splitBtn" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-lg transition">
+                            拆分为单页PDF
+                        </button>
+                    </div>
+                    
+                    <!-- 转图片功能 -->
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-700 mb-2">转换为图片</h3>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <label for="imageFileSelect" class="text-gray-600">选择文件:</label>
+                            <select id="imageFileSelect" class="flex-1 border border-gray-300 rounded px-2 py-1"></select>
+                        </div>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <label for="imageFormat" class="text-gray-600">图片格式:</label>
+                            <select id="imageFormat" class="flex-1 border border-gray-300 rounded px-2 py-1">
+                                <option value="png">PNG</option>
+                                <option value="jpeg">JPEG</option>
+                            </select>
+                        </div>
+                        <button id="imageBtn" class="w-full bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 rounded-lg transition">
+                            转换为图片
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 预览区域 -->
+        <div id="previewSection" class="hidden bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">预览</h2>
+            <div id="previewContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+        </div>
+
+        <!-- 下载区域 -->
+        <div id="downloadSection" class="hidden bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">下载结果</h2>
+            <div id="downloadLinks" class="space-y-2"></div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化pdf.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+        // 文件管理器
+        let uploadedFiles = [];
+        let currentPreviews = [];
+
+        // DOM元素获取
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const selectBtn = document.getElementById('selectBtn');
+        const fileList = document.getElementById('fileList');
+        const splitFileSelect = document.getElementById('splitFileSelect');
+        const imageFileSelect = document.getElementById('imageFileSelect');
+        const mergeBtn = document.getElementById('mergeBtn');
+        const splitBtn = document.getElementById('splitBtn');
+        const imageBtn = document.getElementById('imageBtn');
+        const previewSection = document.getElementById('previewSection');
+        const previewContainer = document.getElementById('previewContainer');
+        const downloadSection = document.getElementById('downloadSection');
+        const downloadLinks = document.getElementById('downloadLinks');
+
+        // 事件监听器
+        selectBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileUpload);
+        uploadArea.addEventListener('dragover', handleDragOver);
+        uploadArea.addEventListener('dragleave', handleDragLeave);
+        uploadArea.addEventListener('drop', handleDrop);
+        mergeBtn.addEventListener('click', mergePdfs);
+        splitBtn.addEventListener('click', splitPdf);
+        imageBtn.addEventListener('click', convertToImages);
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const files = Array.from(e.dataTransfer.files).filter(file => file.type === 'application/pdf');
+            processFiles(files);
+        }
+
+        function handleFileUpload(e) {
+            const files = Array.from(e.target.files).filter(file => file.type === 'application/pdf');
+            processFiles(files);
+        }
+
+        function processFiles(files) {
+            files.forEach(file => {
+                if (!uploadedFiles.some(f => f.name === file.name)) {
+                    uploadedFiles.push(file);
+                }
+            });
+            updateFileList();
+        }
+
+        function updateFileList() {
+            fileList.innerHTML = '';
+            uploadedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'flex justify-between items-center p-2 border rounded bg-gray-50';
+                fileItem.innerHTML = `
+                    <span class="truncate max-w-xs">${file.name}</span>
+                    <button onclick="removeFile(${index})" class="text-red-500 hover:text-red-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+            
+            updateFileSelects();
+        }
+
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            updateFileList();
+        }
+
+        function updateFileSelects() {
+            // 更新拆分文件选择器
+            splitFileSelect.innerHTML = '<option value="">请选择文件</option>';
+            uploadedFiles.forEach((file, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = file.name;
+                splitFileSelect.appendChild(option);
+            });
+            
+            // 更新图片转换文件选择器
+            imageFileSelect.innerHTML = '<option value="">请选择文件</option>';
+            uploadedFiles.forEach((file, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = file.name;
+                imageFileSelect.appendChild(option);
+            });
+        }
+
+        async function mergePdfs() {
+            if (uploadedFiles.length < 2) {
+                alert('请至少上传2个PDF文件进行合并');
+                return;
+            }
+
+            try {
+                const { PDFDocument } = PDFLib.PDFDocument;
+                const mergedPdf = await PDFDocument.create();
+
+                for (const file of uploadedFiles) {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdfDoc = await PDFDocument.load(arrayBuffer);
+                    const copiedPages = await mergedPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
+                    
+                    copiedPages.forEach(page => {
+                        mergedPdf.addPage(page);
+                    });
+                }
+
+                const mergedPdfBytes = await mergedPdf.save();
+                const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+                
+                showDownloadLink(url, 'merged.pdf');
+            } catch (error) {
+                console.error('合并PDF失败:', error);
+                alert('合并PDF失败，请检查文件格式');
+            }
+        }
+
+        async function splitPdf() {
+            const selectedIndex = splitFileSelect.value;
+            if (selectedIndex === '') {
+                alert('请选择要拆分的PDF文件');
+                return;
+            }
+
+            const file = uploadedFiles[parseInt(selectedIndex)];
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                const totalPages = pdf.numPages;
+                
+                const { PDFDocument } = PDFLib.PDFDocument;
+                const downloadUrls = [];
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const pagePdf = await PDFDocument.create();
+                    const sourcePdf = await PDFDocument.load(arrayBuffer);
+                    const [copiedPage] = await pagePdf.copyPages(sourcePdf, [i - 1]);
+                    pagePdf.addPage(copiedPage);
+                    
+                    const pageBytes = await pagePdf.save();
+                    const blob = new Blob([pageBytes], { type: 'application/pdf' });
+                    const url = URL.createObjectURL(blob);
+                    downloadUrls.push({ url, filename: `${file.name.replace('.pdf', '')}_page_${i}.pdf` });
+                }
+
+                showMultipleDownloadLinks(downloadUrls);
+            } catch (error) {
+                console.error('拆分PDF失败:', error);
+                alert('拆分PDF失败，请检查文件格式');
+            }
+        }
+
+        async function convertToImages() {
+            const selectedIndex = imageFileSelect.value;
+            if (selectedIndex === '') {
+                alert('请选择要转换的PDF文件');
+                return;
+            }
+
+            const file = uploadedFiles[parseInt(selectedIndex)];
+            const imageFormat = document.getElementById('imageFormat').value;
+            
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                const totalPages = pdf.numPages;
+                const downloadUrls = [];
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    await page.render({
+                        canvasContext: context,
+                        viewport: viewport
+                    }).promise;
+
+                    canvas.toBlob((blob) => {
+                        const url = URL.createObjectURL(blob);
+                        downloadUrls.push({ 
+                            url, 
+                            filename: `${file.name.replace('.pdf', '')}_page_${i}.${imageFormat}` 
+                        });
+                        
+                        if (downloadUrls.length === totalPages) {
+                            showMultipleDownloadLinks(downloadUrls);
+                        }
+                    }, `image/${imageFormat}`);
+                }
+            } catch (error) {
+                console.error('转换图片失败:', error);
+                alert('转换图片失败，请检查文件格式');
+            }
+        }
+
+        function showPreview(previewData) {
+            previewContainer.innerHTML = '';
+            previewData.forEach(data => {
+                const previewItem = document.createElement('div');
+                previewItem.className = 'page-preview bg-white border rounded overflow-hidden';
+                previewItem.innerHTML = `
+                    <img src="${data.url}" alt="Page ${data.pageNumber}" class="w-full h-40 object-contain" />
+                    <div class="p-2 text-sm text-center text-gray-600">第${data.pageNumber}页</div>
+                `;
+                previewContainer.appendChild(previewItem);
+            });
+            previewSection.classList.remove('hidden');
+        }
+
+        function showDownloadLink(url, filename) {
+            downloadLinks.innerHTML = `
+                <a href="${url}" download="${filename}" class="block w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg text-center transition">
+                    下载 ${filename}
+                </a>
+            `;
+            downloadSection.classList.remove('hidden');
+        }
+
+        function showMultipleDownloadLinks(urls) {
+            downloadLinks.innerHTML = '';
+            urls.forEach(item => {
+                const link = document.createElement('a');
+                link.href = item.url;
+                link.download = item.filename;
+                link.className = 'block w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg text-center transition mb-2 last:mb-0';
+                link.textContent = `下载 ${item.filename}`;
+                downloadLinks.appendChild(link);
+            });
+            downloadSection.classList.remove('hidden');
+        }
+
+        // 全局函数供HTML调用
+        window.removeFile = removeFile;
+    </script>
+</body>
+</html>
