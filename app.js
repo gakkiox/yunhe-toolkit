@@ -34,10 +34,10 @@ const tools = [
   },
     {
     id: 'base64',
-    title: 'Base64加解码',
+    title: 'Base64加解密',
     description: 'Base64加解密工具、编码解码操作',
     icon: 'fa-shuffle',
-    category: 'Base64解码'
+    category: 'Base64解密'
   },
       {
     id: 'json-format',
