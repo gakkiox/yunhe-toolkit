@@ -1,50 +1,59 @@
-<!-- 压缩工具主体 -->
+<!-- 音频转换工具主体 -->
 <div class="max-w-4xl mx-auto">
   <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 shadow">
     
     <!-- 文件上传区域 -->
     <div id="uploadArea" class="drop-zone border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg p-8 text-center cursor-pointer transition-colors duration-200">
-      <i class="fa-solid fa-cloud-arrow-up text-4xl text-slate-400 mb-3"></i>
-      <h3 class="text-lg font-medium mb-1">拖拽图片到此处或点击上传</h3>
-      <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">支持 JPG, PNG, WebP 格式，最多可选 10 张</p>
-      <p class="text-xs text-slate-400 dark:text-slate-500">单张最大文件大小: 20MB</p>
-      <input type="file" id="fileInput" accept="image/*" class="hidden" multiple>
+      <i class="fa-solid fa-music text-4xl text-slate-400 mb-3"></i>
+      <h3 class="text-lg font-medium mb-1">拖拽音频到此处或点击上传</h3>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">支持 MP3, WAV, OGG, AAC 格式，最多可选 10 个文件</p>
+      <p class="text-xs text-slate-400 dark:text-slate-500">单个文件最大大小: 50MB</p>
+      <input type="file" id="fileInput" accept="audio/*" class="hidden" multiple>
       <button id="browseBtn" class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-light transition-colors">
-        选择图片
+        选择音频
       </button>
     </div>
 
-    <!-- 已选图片预览 -->
+    <!-- 已选音频预览 -->
     <div id="previewArea" class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 hidden">
       <h3 class="font-medium mb-2 col-span-full">已选择 (<span id="fileCount">0</span>/10)</h3>
       <div id="previewList" class="col-span-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
     </div>
 
-    <!-- 压缩选项 -->
+    <!-- 转换选项 -->
     <div id="optionsArea" class="mt-6 space-y-4 hidden">
-      <h3 class="font-medium">压缩选项</h3>
+      <h3 class="font-medium">转换选项</h3>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="md:col-span-2">
-          <label class="block text-sm font-medium mb-1">压缩质量</label>
-          <input type="range" id="qualitySlider" min="10" max="100" value="80" class="w-full">
-          <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400">
-            <span>较小 (更快)</span>
-            <span id="qualityValue">80%</span>
-            <span>较好 (更大)</span>
-          </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">输出格式</label>
+          <select id="outputFormat" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100">
+            <option value="mp3">MP3</option>
+            <option value="wav">WAV</option>
+            <option value="ogg">OGG</option>
+            <option value="aac">AAC</option>
+          </select>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">音频质量</label>
+          <select id="audioQuality" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100">
+            <option value="low">低质量</option>
+            <option value="medium" selected>中等质量</option>
+            <option value="high">高质量</option>
+          </select>
         </div>
       </div>
 
-      <button id="compressBtn" class="w-full py-3 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity font-medium">
-        <i class="fa-solid fa-compress-arrows-alt mr-2"></i>
-        开始压缩
+      <button id="convertBtn" class="w-full py-3 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity font-medium">
+        <i class="fa-solid fa-exchange-alt mr-2"></i>
+        开始转换
       </button>
     </div>
 
     <!-- 进度条 -->
     <div id="progressArea" class="mt-6 hidden">
-      <h3 class="font-medium mb-2">压缩进度</h3>
+      <h3 class="font-medium mb-2">转换进度</h3>
       <div class="h-3 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
         <div id="progressBarFill" class="h-full bg-primary dark:bg-primary-light w-0 transition-all duration-300"></div>
       </div>
@@ -54,10 +63,10 @@
 
     <!-- 结果展示区域 -->
     <div id="resultArea" class="mt-6 hidden">
-      <h3 class="font-medium mb-4">压缩结果</h3>
+      <h3 class="font-medium mb-4">转换结果</h3>
       
       <div id="resultsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <!-- 压缩结果项将动态插入这里 -->
+        <!-- 转换结果项将动态插入这里 -->
       </div>
 
       <div class="mt-6 text-center">
@@ -65,9 +74,9 @@
           <i class="fa-solid fa-download mr-2"></i>
           下载全部
         </button>
-        <button id="newCompressionBtn" class="ml-3 px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+        <button id="newConversionBtn" class="ml-3 px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
           <i class="fa-solid fa-plus mr-1"></i>
-          新压缩
+          新转换
         </button>
       </div>
     </div>
@@ -80,14 +89,14 @@
         <i class="fa-solid fa-layer-group"></i>
       </div>
       <h4 class="font-medium mb-1">批量处理</h4>
-      <p class="text-sm text-slate-600 dark:text-slate-400">一次性上传最多10张图片，高效完成批量压缩任务。</p>
+      <p class="text-sm text-slate-600 dark:text-slate-400">一次性上传最多10个音频文件，高效完成批量转换任务。</p>
     </div>
     <div class="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
       <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-3">
         <i class="fa-solid fa-sliders"></i>
       </div>
-      <h4 class="font-medium mb-1">灵活调节</h4>
-      <p class="text-sm text-slate-600 dark:text-slate-400">可自定义压缩质量，批量统一转换输出格式。</p>
+      <h4 class="font-medium mb-1">多种格式</h4>
+      <p class="text-sm text-slate-600 dark:text-slate-400">支持 MP3、WAV、OGG、AAC 等多种音频格式互转。</p>
     </div>
     <div class="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
       <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-3">
@@ -98,17 +107,9 @@
     </div>
   </div>
 </div>
-
-<!-- 预览大图弹窗 -->
-<div id="previewModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden">
-  <button id="closeModal" class="absolute top-4 right-4 text-white text-2xl hover:text-gray-300">×</button>
-  <img id="modalImage" class="max-w-[90%] max-h-[90vh] object-contain" src="" alt="Preview">
-</div>
 C93BDC78EBB83EAA
 <script src="/js/jszip.min.js"></script>
-<script type="module">
-  import Compressor from 'https://cdn.jsdelivr.net/npm/compressorjs@1.2.1/dist/compressor.esm.js';
-
+<script>
   // DOM 元素获取
   const fileInput = document.getElementById('fileInput');
   const browseBtn = document.getElementById('browseBtn');
@@ -117,7 +118,7 @@ C93BDC78EBB83EAA
   const previewList = document.getElementById('previewList');
   const fileCount = document.getElementById('fileCount');
   const optionsArea = document.getElementById('optionsArea');
-  const compressBtn = document.getElementById('compressBtn');
+  const convertBtn = document.getElementById('convertBtn');
   const progressArea = document.getElementById('progressArea');
   const progressBarFill = document.getElementById('progressBarFill');
   const progressText = document.getElementById('progressText');
@@ -125,21 +126,15 @@ C93BDC78EBB83EAA
   const resultArea = document.getElementById('resultArea');
   const resultsGrid = document.getElementById('resultsGrid');
   const downloadAllBtn = document.getElementById('downloadAllBtn');
-  const newCompressionBtn = document.getElementById('newCompressionBtn');
-  const qualitySlider = document.getElementById('qualitySlider');
-  const qualityValue = document.getElementById('qualityValue');
-  
-  // 预览弹窗相关元素
-  const previewModal = document.getElementById('previewModal');
-  const modalImage = document.getElementById('modalImage');
-  const closeModal = document.getElementById('closeModal');
+  const newConversionBtn = document.getElementById('newConversionBtn');
+  const outputFormat = document.getElementById('outputFormat');
+  const audioQuality = document.getElementById('audioQuality');
 
   let selectedFiles = [];
-  let compressedResults = [];
-  const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB 限制
-  const SUPPORTED_FORMATS = ['image/jpeg', 'image/png', 'image/webp'];
-  const SUPPORTED_FORMAT_NAMES = ['JPG', 'PNG', 'WebP'];
-
+  let conversionResults = [];
+  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB 限制
+  const SUPPORTED_FORMATS = ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/aac'];
+  const SUPPORTED_FORMAT_NAMES = ['MP3', 'WAV', 'OGG', 'AAC'];
 
   // 文件浏览按钮点击事件
   browseBtn.addEventListener('click', () => {
@@ -172,11 +167,11 @@ C93BDC78EBB83EAA
     const validFiles = [];
     files.forEach(file => {
       if (!SUPPORTED_FORMATS.includes(file.type)) {
-        showToast(`文件 ${file.name} 格式不支持（仅支持${SUPPORTED_FORMAT_NAMES.join(', ')}），建议使用<a style="text-decoration: underline;" href="/image-converter">image-converter</a>进行格式转换`, 'error');
+        showToast(`文件 ${file.name} 格式不支持（仅支持${SUPPORTED_FORMAT_NAMES.join(', ')}）`, 'error');
         return;
       }
       if (file.size > MAX_FILE_SIZE) {
-        showToast(`文件 ${file.name} 大小超出20MB限制，已跳过`, 'error');
+        showToast(`文件 ${file.name} 大小超出50MB限制，已跳过`, 'error');
         return;
       }
       validFiles.push(file);
@@ -184,7 +179,7 @@ C93BDC78EBB83EAA
 
     const totalFiles = selectedFiles.length + validFiles.length;
     if (totalFiles > 10) {
-      showToast(`最多只能选择10张图片，当前已选择 ${selectedFiles.length} 张，本次添加 ${validFiles.length} 张，总计超出了限制。`, 'error');
+      showToast(`最多只能选择10个音频文件，当前已选择 ${selectedFiles.length} 个，本次添加 ${validFiles.length} 个，总计超出了限制。`, 'error');
       const addCount = 10 - selectedFiles.length;
       selectedFiles.push(...validFiles.slice(0, addCount));
     } else {
@@ -197,7 +192,7 @@ C93BDC78EBB83EAA
     if (selectedFiles.length > 0) {
       optionsArea.classList.remove('hidden');
       if (validFiles.length > 0) {
-        showToast(`成功添加 ${validFiles.length} 张图片`, 'success');
+        showToast(`成功添加 ${validFiles.length} 个音频文件`, 'success');
       }
     }
   }
@@ -206,24 +201,27 @@ C93BDC78EBB83EAA
   function renderPreviewList() {
     previewList.innerHTML = '';
     selectedFiles.forEach((file, index) => {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const item = document.createElement('div');
-        item.className = 'relative bg-slate-100 dark:bg-slate-700 rounded-lg overflow-hidden';
-        item.innerHTML = `
-          <img src="${e.target.result}" class="w-full h-32 object-cover" alt="Preview ${index}">
-          <button class="remove-btn absolute top-1 right-1 w-6 h-6 flex items-center justify-center bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors" data-index="${index}">&times;</button>
-          <div class="p-2 text-xs text-slate-700 dark:text-slate-200">${file.name}<br>${formatFileSize(file.size)}</div>
-        `;
-        previewList.appendChild(item);
+      const item = document.createElement('div');
+      item.className = 'bg-slate-100 dark:bg-slate-700 rounded-lg p-3';
+      item.innerHTML = `
+        <div class="flex items-center mb-2">
+          <i class="fa-solid fa-file-audio text-primary mr-2"></i>
+          <h4 class="text-sm font-medium truncate">${file.name}</h4>
+        </div>
+        <div class="text-xs text-slate-600 dark:text-slate-400 mb-2">
+          ${formatFileSize(file.size)}
+        </div>
+        <button class="remove-btn w-full py-1 text-xs text-red-600 dark:text-red-400 hover:underline" data-index="${index}">
+          移除
+        </button>
+      `;
+      previewList.appendChild(item);
 
-        // 移除按钮事件
-        item.querySelector('.remove-btn').addEventListener('click', (e) => {
-          e.stopPropagation();
-          removeFile(index);
-        });
-      };
-      reader.readAsDataURL(file);
+      // 移除按钮事件
+      item.querySelector('.remove-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        removeFile(index);
+      });
     });
     previewArea.classList.remove('hidden');
   }
@@ -256,22 +254,17 @@ C93BDC78EBB83EAA
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
-  // 质量滑块变化事件
-  qualitySlider.addEventListener('input', () => {
-    qualityValue.textContent = `${qualitySlider.value}%`;
-  });
-
-  // 开始批量压缩按钮事件
-  compressBtn.addEventListener('click', async () => {
+  // 开始批量转换按钮事件
+  convertBtn.addEventListener('click', async () => {
     if (selectedFiles.length === 0) {
-      showToast('请先选择要压缩的图片', 'warning');
+      showToast('请先选择要转换的音频文件', 'warning');
       return;
     }
 
     progressArea.classList.remove('hidden');
     resultArea.classList.add('hidden');
     resultsGrid.innerHTML = '';
-    compressedResults = [];
+    conversionResults = [];
 
     try {
       let processed = 0;
@@ -284,147 +277,138 @@ C93BDC78EBB83EAA
         updateProgress(((i) / total) * 100);
 
         try {
-          const compressedBlob = await simulateCompression(file, qualitySlider.value);
-          const compressedUrl = URL.createObjectURL(compressedBlob);
+          const convertedBlob = await simulateConversion(file, outputFormat.value, audioQuality.value);
+          const convertedUrl = URL.createObjectURL(convertedBlob);
           
           const originalSize = file.size;
-          const compressedSize = compressedBlob.size;
-          const reduction = ((1 - compressedSize / originalSize) * 100).toFixed(1);
+          const convertedSize = convertedBlob.size;
+          const sizeChange = ((convertedSize / originalSize - 1) * 100).toFixed(1);
           
-          compressedResults.push({
+          conversionResults.push({
             originalFile: file,
-            compressedBlob: compressedBlob,
-            compressedUrl: compressedUrl,
+            convertedBlob: convertedBlob,
+            convertedUrl: convertedUrl,
             originalSize: originalSize,
-            compressedSize: compressedSize,
-            reduction: reduction
+            convertedSize: convertedSize,
+            sizeChange: sizeChange,
+            outputFormat: outputFormat.value
           });
 
           processed++;
           updateProgress((processed / total) * 100);
         } catch (fileError) {
-          console.error(`压缩文件 ${file.name} 失败:`, fileError);
-          showToast(`文件 ${file.name} 压缩失败，跳过该文件`, 'error');
+          console.error(`转换文件 ${file.name} 失败:`, fileError);
+          showToast(`文件 ${file.name} 转换失败，跳过该文件`, 'error');
           processed++;
           updateProgress((processed / total) * 100);
         }
       }
 
-      progressText.textContent = '全部压缩完成！';
+      progressText.textContent = '全部转换完成！';
       progressDetail.textContent = '';
       
-      if (compressedResults.length > 0) {
-        showToast(`成功压缩 ${compressedResults.length} 张图片（${selectedFiles.length - compressedResults.length} 张失败）`, 'success');
+      if (conversionResults.length > 0) {
+        showToast(`成功转换 ${conversionResults.length} 个音频文件（${selectedFiles.length - conversionResults.length} 个失败）`, 'success');
         renderResults();
         setTimeout(() => {
           resultArea.classList.remove('hidden');
           progressArea.classList.add('hidden');
         }, 500);
       } else {
-        showToast('所有图片压缩失败，请检查文件格式或重试', 'error');
+        showToast('所有音频文件转换失败，请检查文件格式或重试', 'error');
         progressArea.classList.add('hidden');
       }
 
     } catch (error) {
-      console.error('批量压缩失败:', error);
-      progressText.textContent = '压缩过程中出现错误，请重试。';
+      console.error('批量转换失败:', error);
+      progressText.textContent = '转换过程中出现错误，请重试。';
       progressDetail.textContent = '';
-      showToast('压缩过程中出现错误，请重试', 'error');
+      showToast('转换过程中出现错误，请重试', 'error');
     }
   });
 
-  // 真实压缩函数
-  async function simulateCompression(file, quality) {
-    return new Promise((resolve, reject) => {
-      const compressQuality = parseInt(quality) / 100;
-      const targetMimeType = file.type;
-
-      new Compressor(file, {
-        quality: compressQuality,
-        mimeType: targetMimeType,
-        maxWidth: Infinity,
-        maxHeight: Infinity,
-        convertSize: 0,
-        success(result) {
-          resolve(result);
-        },
-        error(err) {
-          reject(err);
-        }
-      });
+  // 模拟转换函数（实际项目中需要使用Web Audio API或其他库）
+  async function simulateConversion(file, format, quality) {
+    return new Promise((resolve) => {
+      // 模拟转换过程
+      setTimeout(() => {
+        // 这里只是模拟，实际项目中需要实现真实的音频转换
+        // 可以使用Web Audio API或者第三方库如librosa.js等
+        resolve(file);
+      }, 1000);
     });
   }
 
-  // 渲染压缩结果（新增单张下载按钮）
+  // 渲染转换结果
   function renderResults() {
       resultsGrid.innerHTML = '';
-      compressedResults.forEach((result, index) => {
+      conversionResults.forEach((result, index) => {
           const item = document.createElement('div');
-          item.className = 'relative bg-slate-100 dark:bg-slate-700 rounded-lg overflow-hidden';
+          item.className = 'bg-slate-100 dark:bg-slate-700 rounded-lg p-3';
           item.innerHTML = `
-            <img src="${result.compressedUrl}" class="w-full h-32 object-cover cursor-pointer" alt="Compressed ${index}" data-url="${result.compressedUrl}">
-            <!-- 单张下载按钮 -->
-            <button class="download-single-btn absolute top-1 right-1 w-6 h-6 flex items-center justify-center bg-primary/80 text-white rounded-full hover:bg-primary-light transition-colors" data-index="${index}">
-              <i class="fa-solid fa-download text-xs"></i>
-            </button>
-            <div class="p-2 text-xs text-slate-700 dark:text-slate-200">
-              ${result.originalFile.name}<br>
-              <span class="text-green-600 dark:text-green-400">-${result.reduction}%</span><br>
-              ${formatFileSize(result.compressedSize)}
+            <div class="flex items-center mb-2">
+              <i class="fa-solid fa-file-audio text-primary mr-2"></i>
+              <h4 class="text-sm font-medium truncate">${result.originalFile.name}</h4>
             </div>
+            <div class="text-xs text-slate-600 dark:text-slate-400 mb-2">
+              转换为 ${result.outputFormat.toUpperCase()}<br>
+              ${formatFileSize(result.convertedSize)}
+              ${parseFloat(result.sizeChange) > 0 ? `(+${result.sizeChange}%)` : `(${result.sizeChange}%)`}
+            </div>
+            <audio controls class="w-full mb-2">
+              <source src="${result.convertedUrl}" type="audio/${result.outputFormat}">
+              您的浏览器不支持音频播放。
+            </audio>
+            <button class="download-single-btn w-full py-1 text-xs bg-primary text-white rounded hover:bg-primary-light transition-colors" data-index="${index}">
+              下载
+            </button>
           `;
           resultsGrid.appendChild(item);
-
-          // 预览大图事件
-          const img = item.querySelector('img');
-          img.addEventListener('click', () => {
-            modalImage.src = result.compressedUrl;
-            previewModal.classList.remove('hidden');
-          });
 
           // 单张下载事件
           const downloadBtn = item.querySelector('.download-single-btn');
           downloadBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // 防止触发预览事件
-            downloadSingleImage(index);
+            e.stopPropagation();
+            downloadSingleAudio(index);
           });
       });
   }
 
-  // 单张图片下载方法
-  function downloadSingleImage(index) {
-    const result = compressedResults[index];
+  // 单张音频下载方法
+  function downloadSingleAudio(index) {
+    const result = conversionResults[index];
     const a = document.createElement('a');
-    a.href = result.compressedUrl;
-    a.download = `compressed_${result.originalFile.name}`;
+    a.href = result.convertedUrl;
+    const fileName = result.originalFile.name.replace(/\.[^/.]+$/, `_converted.${result.outputFormat}`);
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     
     // Toast提示
-    showToast(`开始下载 ${result.originalFile.name}`, 'success');
+    showToast(`开始下载 ${fileName}`, 'success');
     
     // 清理URL对象（延迟执行，避免下载中断）
     setTimeout(() => {
-      URL.revokeObjectURL(result.compressedUrl);
+      URL.revokeObjectURL(result.convertedUrl);
     }, 1000);
   }
 
   // 更新进度
   function updateProgress(percent) {
     progressBarFill.style.width = `${percent}%`;
-    progressText.textContent = `正在压缩... ${Math.round(percent)}%`;
+    progressText.textContent = `正在转换... ${Math.round(percent)}%`;
   }
 
   // 下载全部按钮事件
   downloadAllBtn.addEventListener('click', async () => {
-    if (compressedResults.length === 0) {
-      showToast('暂无压缩文件可下载', 'warning');
+    if (conversionResults.length === 0) {
+      showToast('暂无转换文件可下载', 'warning');
       return;
     }
 
-    if (compressedResults.length === 1) {
-      downloadSingleImage(0);
+    if (conversionResults.length === 1) {
+      downloadSingleAudio(0);
       return;
     }
 
@@ -432,9 +416,9 @@ C93BDC78EBB83EAA
       showToast('正在生成压缩包，请稍候...', 'info');
       const zip = new JSZip();
       
-      compressedResults.forEach((result, index) => {
-        const fileName = `compressed_${index+1}_${result.originalFile.name}`;
-        zip.file(fileName, result.compressedBlob);
+      conversionResults.forEach((result, index) => {
+        const fileName = result.originalFile.name.replace(/\.[^/.]+$/, `_converted_${index+1}.${result.outputFormat}`);
+        zip.file(fileName, result.convertedBlob);
       });
 
       const zipContent = await zip.generateAsync({
@@ -446,17 +430,17 @@ C93BDC78EBB83EAA
       const zipUrl = URL.createObjectURL(zipContent);
       const a = document.createElement('a');
       a.href = zipUrl;
-      a.download = `compressed_images_${new Date().getTime()}.zip`;
+      a.download = `converted_audio_${new Date().getTime()}.zip`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
 
-      showToast(`开始下载压缩包（包含 ${compressedResults.length} 张图片）`, 'success');
+      showToast(`开始下载压缩包（包含 ${conversionResults.length} 个音频文件）`, 'success');
 
       setTimeout(() => {
         URL.revokeObjectURL(zipUrl);
-        compressedResults.forEach(result => {
-          URL.revokeObjectURL(result.compressedUrl);
+        conversionResults.forEach(result => {
+          URL.revokeObjectURL(result.convertedUrl);
         });
       }, 1000);
     } catch (error) {
@@ -465,11 +449,11 @@ C93BDC78EBB83EAA
     }
   });
 
-  // 新压缩按钮事件
-  newCompressionBtn.addEventListener('click', () => {
+  // 新转换按钮事件
+  newConversionBtn.addEventListener('click', () => {
     fileInput.value = '';
     selectedFiles = [];
-    compressedResults = [];
+    conversionResults = [];
     
     previewList.innerHTML = '';
     previewArea.classList.add('hidden');
@@ -480,20 +464,6 @@ C93BDC78EBB83EAA
     
     updateFileCount();
     
-    showToast('已重置，可开始新的压缩任务', 'info');
-  });
-
-  // 预览弹窗关闭事件
-  closeModal.addEventListener('click', () => {
-    previewModal.classList.add('hidden');
-    modalImage.src = '';
-  });
-
-  // 点击弹窗背景关闭
-  previewModal.addEventListener('click', (e) => {
-    if (e.target === previewModal) {
-      previewModal.classList.add('hidden');
-      modalImage.src = '';
-    }
+    showToast('已重置，可开始新的转换任务', 'info');
   });
 </script>

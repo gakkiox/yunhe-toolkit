@@ -1,9 +1,11 @@
+
+
 <!-- 压缩工具主体 -->
 <div class="max-w-4xl mx-auto">
   <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 shadow">
     
     <!-- 文件上传区域 -->
-    <div id="uploadArea" class="drop-zone">
+    <div id="uploadArea" class="drop-zone border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg p-8 text-center cursor-pointer transition-colors duration-200">
       <i class="fa-solid fa-cloud-arrow-up text-4xl text-slate-400 mb-3"></i>
       <h3 class="text-lg font-medium mb-1">拖拽图片到此处或点击上传</h3>
       <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">支持 JPG, PNG, WebP 格式，最多可选 10 张</p>
@@ -15,9 +17,9 @@
     </div>
 
     <!-- 已选图片预览 -->
-    <div id="previewArea" class="mt-4 preview-grid hidden">
+    <div id="previewArea" class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 hidden">
       <h3 class="font-medium mb-2 col-span-full">已选择 (<span id="fileCount">0</span>/10)</h3>
-      <div id="previewList" class="col-span-full"></div>
+      <div id="previewList" class="col-span-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
     </div>
 
     <!-- 压缩选项 -->
@@ -25,7 +27,7 @@
       <h3 class="font-medium">压缩选项</h3>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="md:col-span-2"> <!-- 占满整行，适配移动端 -->
+        <div class="md:col-span-2">
           <label class="block text-sm font-medium mb-1">压缩质量</label>
           <input type="range" id="qualitySlider" min="10" max="100" value="80" class="w-full">
           <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400">
@@ -34,10 +36,9 @@
             <span>较好 (更大)</span>
           </div>
         </div>
-        <!-- 移除格式选择下拉框 -->
       </div>
 
-      <button id="compressBtn" class="w-full py-3 bg-secondary text-white rounded-lg hover:opacity-90 transition-opacity font-medium">
+      <button id="compressBtn" class="w-full py-3 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity font-medium">
         <i class="fa-solid fa-compress-arrows-alt mr-2"></i>
         开始压缩
       </button>
@@ -46,8 +47,8 @@
     <!-- 进度条 -->
     <div id="progressArea" class="mt-6 hidden">
       <h3 class="font-medium mb-2">压缩进度</h3>
-      <div class="progress-bar">
-        <div id="progressBarFill" class="progress-bar-fill"></div>
+      <div class="h-3 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+        <div id="progressBarFill" class="h-full bg-primary dark:bg-primary-light w-0 transition-all duration-300"></div>
       </div>
       <p id="progressText" class="text-center text-sm mt-2 text-slate-600 dark:text-slate-300">准备中...</p>
       <p id="progressDetail" class="text-center text-xs mt-1 text-slate-500 dark:text-slate-400"></p>
@@ -57,7 +58,7 @@
     <div id="resultArea" class="mt-6 hidden">
       <h3 class="font-medium mb-4">压缩结果</h3>
       
-      <div id="resultsGrid" class="preview-grid">
+      <div id="resultsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <!-- 压缩结果项将动态插入这里 -->
       </div>
 
@@ -100,12 +101,12 @@
   </div>
 </div>
 
-<!-- 预览大图弹窗 (新增) -->
+<!-- 预览大图弹窗 -->
 <div id="previewModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden">
   <button id="closeModal" class="absolute top-4 right-4 text-white text-2xl hover:text-gray-300">×</button>
   <img id="modalImage" class="max-w-[90%] max-h-[90vh] object-contain" src="" alt="Preview">
 </div>
-
+C93BDC78EBB83EAA
 <script src="/js/jszip.min.js"></script>
 <script type="module">
     import Compressor from 'https://cdn.jsdelivr.net/npm/compressorjs@1.2.1/dist/compressor.esm.js';
@@ -130,7 +131,7 @@
   const qualitySlider = document.getElementById('qualitySlider');
   const qualityValue = document.getElementById('qualityValue');
   
-  // 新增预览弹窗相关元素
+  // 预览弹窗相关元素
   const previewModal = document.getElementById('previewModal');
   const modalImage = document.getElementById('modalImage');
   const closeModal = document.getElementById('closeModal');
@@ -138,9 +139,9 @@
   let selectedFiles = [];
   let compressedResults = [];
   const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB 限制
-  // 支持的图片格式 (新增)
   const SUPPORTED_FORMATS = ['image/jpeg', 'image/png', 'image/webp'];
   const SUPPORTED_FORMAT_NAMES = ['JPG', 'PNG', 'WebP'];
+
 
   // 文件浏览按钮点击事件
   browseBtn.addEventListener('click', () => {
@@ -155,30 +156,27 @@
   // 拖拽上传事件
   uploadArea.addEventListener('dragover', (e) => {
     e.preventDefault();
-    uploadArea.classList.add('drop-zone--over');
+    uploadArea.classList.add('border-primary', 'bg-primary/10');
   });
 
   uploadArea.addEventListener('dragleave', () => {
-    uploadArea.classList.remove('drop-zone--over');
+    uploadArea.classList.remove('border-primary', 'bg-primary/10');
   });
 
   uploadArea.addEventListener('drop', (e) => {
     e.preventDefault();
-    uploadArea.classList.remove('drop-zone--over');
+    uploadArea.classList.remove('border-primary', 'bg-primary/10');
     handleFileSelect(Array.from(e.dataTransfer.files));
   });
 
-  // 处理文件选择 (修改：严格校验格式)
+  // 处理文件选择
   function handleFileSelect(files) {
-    // 过滤出图片文件并检查大小和数量
     const validFiles = [];
     files.forEach(file => {
-      // 严格校验支持的格式
       if (!SUPPORTED_FORMATS.includes(file.type)) {
-        showToast(`文件 ${file.name} 格式不支持（仅支持${SUPPORTED_FORMAT_NAMES.join(', ')}），建议使用<a style="color:#4f46e5;text-decoration: underline;" href="/image-converter">image-converter</a>进行格式转换`, 'error');
+        showToast(`文件 ${file.name} 格式不支持（仅支持${SUPPORTED_FORMAT_NAMES.join(', ')}），建议使用<a style="text-decoration: underline;" href="/image-converter">image-converter</a>进行格式转换`, 'error');
         return;
       }
-      // 检查文件大小是否超过20MB
       if (file.size > MAX_FILE_SIZE) {
         showToast(`文件 ${file.name} 大小超出20MB限制，已跳过`, 'error');
         return;
@@ -186,11 +184,9 @@
       validFiles.push(file);
     });
 
-    // 检查总数量限制
     const totalFiles = selectedFiles.length + validFiles.length;
     if (totalFiles > 10) {
       showToast(`最多只能选择10张图片，当前已选择 ${selectedFiles.length} 张，本次添加 ${validFiles.length} 张，总计超出了限制。`, 'error');
-      // 只添加不超限的部分
       const addCount = 10 - selectedFiles.length;
       selectedFiles.push(...validFiles.slice(0, addCount));
     } else {
@@ -215,15 +211,15 @@
       const reader = new FileReader();
       reader.onload = function(e) {
         const item = document.createElement('div');
-        item.className = 'preview-item';
+        item.className = 'relative bg-slate-100 dark:bg-slate-700 rounded-lg overflow-hidden';
         item.innerHTML = `
-          <img src="${e.target.result}" class="preview-img" alt="Preview ${index}">
-          <div class="remove-btn" data-index="${index}">&times;</div>
-          <div class="preview-info">${file.name}<br>${formatFileSize(file.size)}</div>
+          <img src="${e.target.result}" class="w-full h-32 object-cover" alt="Preview ${index}">
+          <button class="remove-btn absolute top-1 right-1 w-6 h-6 flex items-center justify-center bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors" data-index="${index}">&times;</button>
+          <div class="p-2 text-xs text-slate-700 dark:text-slate-200">${file.name}<br>${formatFileSize(file.size)}</div>
         `;
         previewList.appendChild(item);
 
-        // 添加移除按钮事件
+        // 移除按钮事件
         item.querySelector('.remove-btn').addEventListener('click', (e) => {
           e.stopPropagation();
           removeFile(index);
@@ -241,7 +237,6 @@
     renderPreviewList();
     updateFileCount();
 
-    // 添加移除成功提示
     showToast(`已移除 ${removedFileName}`, 'info');
 
     if (selectedFiles.length === 0) {
@@ -275,11 +270,10 @@
       return;
     }
 
-    // 显示进度区域
     progressArea.classList.remove('hidden');
     resultArea.classList.add('hidden');
-    resultsGrid.innerHTML = ''; // 清空上次结果
-    compressedResults = []; // 重置结果数组
+    resultsGrid.innerHTML = '';
+    compressedResults = [];
 
     try {
       let processed = 0;
@@ -288,16 +282,13 @@
       for (let i = 0; i < selectedFiles.length; i++) {
         const file = selectedFiles[i];
         
-        // 更新进度详情
         progressDetail.textContent = `正在处理: ${file.name}`;
-        updateProgress(((i) / total) * 100); // 处理前更新进度
+        updateProgress(((i) / total) * 100);
 
         try {
-          // 真实压缩（使用compressor.js）
           const compressedBlob = await simulateCompression(file, qualitySlider.value);
           const compressedUrl = URL.createObjectURL(compressedBlob);
           
-          // 存储结果
           const originalSize = file.size;
           const compressedSize = compressedBlob.size;
           const reduction = ((1 - compressedSize / originalSize) * 100).toFixed(1);
@@ -312,7 +303,7 @@
           });
 
           processed++;
-          updateProgress((processed / total) * 100); // 处理完成后更新进度
+          updateProgress((processed / total) * 100);
         } catch (fileError) {
           console.error(`压缩文件 ${file.name} 失败:`, fileError);
           showToast(`文件 ${file.name} 压缩失败，跳过该文件`, 'error');
@@ -327,7 +318,6 @@
       if (compressedResults.length > 0) {
         showToast(`成功压缩 ${compressedResults.length} 张图片（${selectedFiles.length - compressedResults.length} 张失败）`, 'success');
         renderResults();
-        // 显示结果区域
         setTimeout(() => {
           resultArea.classList.remove('hidden');
           progressArea.classList.add('hidden');
@@ -345,41 +335,41 @@
     }
   });
 
-  // 真实压缩函数 (修改：移除格式参数，固定使用原格式)
+  // 真实压缩函数
   async function simulateCompression(file, quality) {
     return new Promise((resolve, reject) => {
-      // 转换质量值（compressor.js 接受 0.0 - 1.0 范围）
       const compressQuality = parseInt(quality) / 100;
-      
-      // 固定使用原文件格式
       const targetMimeType = file.type;
 
-      // 使用 compressor.js 压缩图片
       new Compressor(file, {
-        quality: compressQuality, // 压缩质量
-        mimeType: targetMimeType, // 输出格式（固定原格式）
-        maxWidth: Infinity, // 不限制宽度
-        maxHeight: Infinity, // 不限制高度
-        convertSize: 0, // 强制转换格式（即使文件小）
+        quality: compressQuality,
+        mimeType: targetMimeType,
+        maxWidth: Infinity,
+        maxHeight: Infinity,
+        convertSize: 0,
         success(result) {
-          resolve(result); // 返回压缩后的 Blob 对象
+          resolve(result);
         },
         error(err) {
-          reject(err); // 抛出错误
+          reject(err);
         }
       });
     });
   }
 
-  // 渲染压缩结果 (修改：增强预览功能，适配移动端)
+  // 渲染压缩结果（新增单张下载按钮）
   function renderResults() {
       resultsGrid.innerHTML = '';
       compressedResults.forEach((result, index) => {
           const item = document.createElement('div');
-          item.className = 'preview-item';
+          item.className = 'relative bg-slate-100 dark:bg-slate-700 rounded-lg overflow-hidden';
           item.innerHTML = `
-            <img src="${result.compressedUrl}" class="preview-img cursor-pointer" alt="Compressed ${index}" data-url="${result.compressedUrl}">
-            <div class="preview-info">
+            <img src="${result.compressedUrl}" class="w-full h-32 object-cover cursor-pointer" alt="Compressed ${index}" data-url="${result.compressedUrl}">
+            <!-- 单张下载按钮 -->
+            <button class="download-single-btn absolute top-1 right-1 w-6 h-6 flex items-center justify-center bg-primary/80 text-white rounded-full hover:bg-primary-light transition-colors" data-index="${index}">
+              <i class="fa-solid fa-download text-xs"></i>
+            </button>
+            <div class="p-2 text-xs text-slate-700 dark:text-slate-200">
               ${result.originalFile.name}<br>
               <span class="text-green-600 dark:text-green-400">-${result.reduction}%</span><br>
               ${formatFileSize(result.compressedSize)}
@@ -387,13 +377,39 @@
           `;
           resultsGrid.appendChild(item);
 
-          // 添加点击预览大图事件 (新增)
-          const img = item.querySelector('.preview-img');
+          // 预览大图事件
+          const img = item.querySelector('img');
           img.addEventListener('click', () => {
             modalImage.src = result.compressedUrl;
             previewModal.classList.remove('hidden');
           });
+
+          // 单张下载事件
+          const downloadBtn = item.querySelector('.download-single-btn');
+          downloadBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // 防止触发预览事件
+            downloadSingleImage(index);
+          });
       });
+  }
+
+  // 单张图片下载方法
+  function downloadSingleImage(index) {
+    const result = compressedResults[index];
+    const a = document.createElement('a');
+    a.href = result.compressedUrl;
+    a.download = `compressed_${result.originalFile.name}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    // Toast提示
+    showToast(`开始下载 ${result.originalFile.name}`, 'success');
+    
+    // 清理URL对象（延迟执行，避免下载中断）
+    setTimeout(() => {
+      URL.revokeObjectURL(result.compressedUrl);
+    }, 1000);
   }
 
   // 更新进度
@@ -409,44 +425,26 @@
       return;
     }
 
-    // 单张图片直接下载
     if (compressedResults.length === 1) {
-      const result = compressedResults[0];
-      const a = document.createElement('a');
-      a.href = result.compressedUrl;
-      a.download = `compressed_${result.originalFile.name}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      showToast(`开始下载 ${result.originalFile.name}`, 'success');
-      
-      // 稍后清理 URL 对象
-      setTimeout(() => {
-        URL.revokeObjectURL(result.compressedUrl);
-      }, 1000);
+      downloadSingleImage(0);
       return;
     }
 
-    // 多张图片打包为ZIP下载
     try {
       showToast('正在生成压缩包，请稍候...', 'info');
       const zip = new JSZip();
       
-      // 向压缩包中添加所有压缩后的图片
       compressedResults.forEach((result, index) => {
         const fileName = `compressed_${index+1}_${result.originalFile.name}`;
-        // 将Blob添加到ZIP
         zip.file(fileName, result.compressedBlob);
       });
 
-      // 生成ZIP文件
       const zipContent = await zip.generateAsync({
         type: 'blob',
         compression: 'DEFLATE',
         compressionOptions: { level: 6 }
       });
 
-      // 创建下载链接
       const zipUrl = URL.createObjectURL(zipContent);
       const a = document.createElement('a');
       a.href = zipUrl;
@@ -457,7 +455,6 @@
 
       showToast(`开始下载压缩包（包含 ${compressedResults.length} 张图片）`, 'success');
 
-      // 清理URL对象
       setTimeout(() => {
         URL.revokeObjectURL(zipUrl);
         compressedResults.forEach(result => {
@@ -472,7 +469,6 @@
 
   // 新压缩按钮事件
   newCompressionBtn.addEventListener('click', () => {
-    // 重置所有状态
     fileInput.value = '';
     selectedFiles = [];
     compressedResults = [];
@@ -486,130 +482,20 @@
     
     updateFileCount();
     
-    // 添加重置提示
     showToast('已重置，可开始新的压缩任务', 'info');
   });
 
-  // 预览弹窗关闭事件 (新增)
+  // 预览弹窗关闭事件
   closeModal.addEventListener('click', () => {
     previewModal.classList.add('hidden');
-    modalImage.src = ''; // 清空图片地址
+    modalImage.src = '';
   });
 
-  // 点击弹窗背景关闭 (新增，适配移动端操作)
+  // 点击弹窗背景关闭
   previewModal.addEventListener('click', (e) => {
     if (e.target === previewModal) {
       previewModal.classList.add('hidden');
       modalImage.src = '';
     }
   });
-
-
 </script>
-
-<style>
-/* 基础样式补充 */
-.drop-zone {
-  border: 2px dashed #e2e8f0;
-  border-radius: 8px;
-  padding: 2rem;
-  text-align: center;
-  cursor: pointer;
-  transition: border-color 0.2s ease;
-}
-.drop-zone--over {
-  border-color: #3b82f6;
-  background-color: #f0f9ff;
-}
-.preview-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 1rem;
-}
-.preview-item {
-  position: relative;
-  border: 1px solid #e2e8f0;
-  border-radius: 4px;
-  overflow: hidden;
-}
-.preview-img {
-  width: 100%;
-  height: 100px;
-  object-fit: cover;
-}
-.remove-btn {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 20px;
-  height: 20px;
-  background-color: rgba(0,0,0,0.5);
-  color: white;
-  text-align: center;
-  line-height: 20px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 14px;
-}
-.preview-info {
-  padding: 4px;
-  font-size: 12px;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.progress-bar {
-  height: 8px;
-  width: 100%;
-  background-color: #e2e8f0;
-  border-radius: 4px;
-  overflow: hidden;
-}
-.progress-bar-fill {
-  height: 100%;
-  width: 0%;
-  background-color: #3b82f6;
-  transition: width 0.3s ease;
-}
-/* 主题色样式 */
-.bg-primary {
-  background-color: #3b82f6;
-}
-.bg-primary-light {
-  background-color: #60a5fa;
-}
-.bg-secondary {
-  background-color: #10b981;
-}
-
-/* 新增：预览弹窗样式（适配移动端） */
-#previewModal {
-  touch-action: none; /* 防止移动端触摸事件冲突 */
-}
-.cursor-pointer {
-  cursor: pointer;
-}
-
-/* 移动端适配优化 */
-@media (max-width: 768px) {
-  .preview-grid {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 0.5rem;
-  }
-  .preview-img {
-    height: 80px;
-  }
-  .drop-zone {
-    padding: 1.5rem;
-  }
-  #downloadAllBtn, #newCompressionBtn {
-    display: block;
-    width: 100%;
-    margin: 0.5rem 0;
-  }
-  #newCompressionBtn {
-    margin-left: 0 !important;
-  }
-}
-</style>

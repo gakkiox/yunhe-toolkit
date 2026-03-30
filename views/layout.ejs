@@ -17,8 +17,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <meta property="og:site_name" content="云河工具站 | YunHe">
   <meta property="og:title" content="<%= title %>">
-  <meta property="og:description"
-    content="<%= description %>">
+  <meta property="og:description" content="<%= description %>">
   <meta property="og:image" content="/favicon.ico">
   <!-- Tailwind 配置：自定义主题色 + 暗黑模式 -->
   <script>
@@ -197,7 +196,7 @@
       
   </style>
 
-    <!-- 子页面样式放这里！ -->
+  <!-- 子页面样式放这里！ -->
   <%- page_style %>
 </head>
 
@@ -209,8 +208,10 @@
       class="lg:hidden bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-4 sticky top-0 z-40">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2 text-primary text-lg font-bold">
-          <i class="fa-solid fa-tools text-xl"></i>
-          <span>云河工具站</span>
+          <a href="/">
+            <i class="fa-solid fa-tools text-xl"></i>
+            <span>云河工具站</span>
+          </a>
         </div>
         <button id="mobileMenuBtn"
           class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
@@ -225,8 +226,11 @@
         class="fixed left-0 top-0 h-screen w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 p-6 overflow-y-auto transform -translate-x-full lg:translate-x-0 transition-transform z-50">
         <div
           class="flex items-center gap-2 text-primary text-xl font-bold pb-5 border-b border-slate-200 dark:border-slate-700 mb-6">
-          <i class="fa-solid fa-tools text-2xl"></i>
-          <span>云河工具站</span>
+          <a href="/" title="云河工具站">
+            <i class="fa-solid fa-tools text-2xl"></i>
+            <span>云河工具站</span>
+          </a>
+
         </div>
 
         <p class="text-xs uppercase text-slate-500 dark:text-slate-400 mb-2 mt-4 tracking-wider">主导航</p>

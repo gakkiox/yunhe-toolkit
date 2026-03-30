@@ -32,14 +32,21 @@ const tools = [
     icon: 'fa-file-image',
     category: '格式转换'
   },
-    {
+  {
+    id: 'audio-converter',
+    title: '音频格式转换',
+    description: '在线音频格式转换工具，支持多种音频格式互转',
+    icon: 'fa-volume-up',
+    category: '格式转换'
+  },
+  {
     id: 'base64',
     title: 'Base64加解密',
     description: 'Base64加解密工具、编码解码操作',
     icon: 'fa-shuffle',
     category: 'Base64解密'
   },
-      {
+  {
     id: 'json-format',
     title: 'JSON格式化',
     description: 'JSON格式化工具、支持语法高亮',
@@ -144,6 +151,26 @@ app.get('/json-format', (req, res) => {
   });
 });
 
+// 音频格式转换路由
+app.get('/audio-converter', (req, res) => {
+  let page_data = {
+    title: '音频格式转换工具 - 云河工具站',
+    description: '云河工具站 - 免费在线音频格式转换工具，支持多种音频格式互转，无需上传服务器，安全高效',
+    keywords: '音频格式转换,在线音频转换,音频转换工具,MP3转换,WAV转换,OGG转换,免费音频处理'
+  };
+  
+  res.render('audio-converter', { ...page_data }, (err, html_template) => {
+    if (err) { console.log(err); };
+    let [html, page_script, page_style] = html_template.split(split_string);
+    res.render('layout', {
+      ...page_data,
+      main: html,
+      page_script,
+      page_style
+    });
+  });
+});
+
 // 生成 sitemap.xml 路由
 
 app.get('/sitemap.xml', async (req, res) => {
@@ -160,6 +187,7 @@ app.get('/sitemap.xml', async (req, res) => {
       { url: '/', changefreq: 'daily', priority: 1.0 },
       { url: '/image-converter', changefreq: 'weekly', priority: 0.8 },
       { url: '/image-compressor', changefreq: 'weekly', priority: 0.8 },
+      { url: '/audio-converter', changefreq: 'weekly', priority: 0.8 },
       { url: '/base64', changefreq: 'weekly', priority: 0.8 },
       { url: '/json-format', changefreq: 'weekly', priority: 0.8 },
     ];
