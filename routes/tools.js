@@ -26,6 +26,13 @@ const tools = [
     category: '格式转换'
   },
   {
+    id: 'audio-cutter',
+    title: '音频裁切',
+    description: '在线音频裁切工具，支持精确截取音频片段',
+    icon: 'fa-cut',
+    category: '音频处理'
+  },
+  {
     id: 'base64',
     title: 'Base64加解密',
     description: 'Base64加解密工具、编码解码操作',
@@ -147,6 +154,26 @@ router.get('/audio-converter', (req, res) => {
   };
   
   res.render('audio-converter', { ...page_data }, (err, html_template) => {
+    if (err) { console.log(err); };
+    let [html, page_script, page_style] = html_template.split(split_string);
+    res.render('layout', {
+      ...page_data,
+      main: html,
+      page_script,
+      page_style
+    });
+  });
+});
+
+// 音频裁切路由
+router.get('/audio-cutter', (req, res) => {
+  let page_data = {
+    title: '音频裁切工具 - 云河工具站',
+    description: '云河工具站 - 免费在线音频裁切工具，支持精确截取音频片段，无需上传服务器，安全高效',
+    keywords: '音频裁切,在线音频裁切,音频截取,音频剪辑,免费音频处理'
+  };
+  
+  res.render('audio-cutter', { ...page_data }, (err, html_template) => {
     if (err) { console.log(err); };
     let [html, page_script, page_style] = html_template.split(split_string);
     res.render('layout', {

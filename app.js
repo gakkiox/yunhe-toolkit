@@ -39,6 +39,7 @@ app.get('/sitemap.xml', async (req, res) => {
       { url: '/image-converter', changefreq: 'weekly', priority: 0.8 },
       { url: '/image-compressor', changefreq: 'weekly', priority: 0.8 },
       { url: '/audio-converter', changefreq: 'weekly', priority: 0.8 },
+      { url: '/audio-cutter', changefreq: 'weekly', priority: 0.8 },
       { url: '/base64', changefreq: 'weekly', priority: 0.8 },
       { url: '/json-format', changefreq: 'weekly', priority: 0.8 },
     ];
