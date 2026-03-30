@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="关于云河工具站，一个免费的在线工具集合平台">
+  <meta name="keywords" content="关于,云河工具站,在线工具,免费工具">
+  <title>关于 - 云河工具站</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome 6.4.0 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#4f46e5',
+            'primary-light': '#6366f1',
+          },
+        },
+      }
+    }
+  </script>
+
+  <style>
+    /* Toast 样式 */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+    }
+    
+    .toast {
+      background: #ffffff;
+      color: #333;
+      border-radius: 8px;
+      padding: 12px 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      max-width: 300px;
+      width: auto;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.3s ease;
+      border-left: 4px solid #4f46e5;
+    }
+    
+    .dark .toast {
+      background: #1e293b;
+      color: #e2e8f0;
+    }
+    
+    .toast.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    
+    .toast.success {
+      border-left-color: #10b981;
+    }
+    
+    .toast.error {
+      border-left-color: #ef4444;
+    }
+    
+    .toast.warning {
+      border-left-color: #f59e0b;
+    }
+    
+    .toast.info {
+      border-left-color: #3b82f6;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen transition-colors">
+
+  <!-- 顶部导航栏 -->
+  <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo -->
+        <div class="flex items-center gap-2 text-primary text-lg font-bold">
+          <a href="/" class="flex items-center gap-2">
+            <i class="fa-solid fa-tools text-xl"></i>
+            <span>云河工具站</span>
+          </a>
+          <span class="text-slate-400 dark:text-slate-500">|</span>
+          <span class="text-slate-600 dark:text-slate-300 font-medium">关于</span>
+        </div>
+
+        <!-- 导航链接 -->
+        <nav class="hidden md:flex items-center gap-6">
+          <a href="/" class="text-slate-600 dark:text-slate-300 hover:text-primary transition-colors">全部工具</a>
+          <a href="/blog.html" class="text-slate-600 dark:text-slate-300 hover:text-primary transition-colors">博客</a>
+          <a href="/about.html" class="text-primary font-medium">关于</a>
+        </nav>
+
+        <!-- 主题切换 -->
+        <button id="themeToggle" class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+          <i class="fa-solid fa-moon dark:hidden"></i>
+          <i class="fa-solid fa-sun hidden dark:inline-block"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- 关于页面头部 -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 shadow mb-6">
+      <h1 class="text-3xl font-bold mb-2">关于云河工具站</h1>
+      <p class="text-slate-600 dark:text-slate-400">一个免费的在线工具集合平台</p>
+    </div>
+
+    <!-- 关于内容 -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 shadow mb-6">
+      <h2 class="text-2xl font-bold mb-4">我们的使命</h2>
+      <p class="text-slate-600 dark:text-slate-400 mb-4">
+        云河工具站致力于为用户提供免费、高效、安全的在线工具集合，帮助用户解决日常工作和生活中的各种问题。我们相信技术应该为每个人服务，而不是成为障碍。
+      </p>
+      <p class="text-slate-600 dark:text-slate-400 mb-4">
+        我们的目标是创建一个一站式的工具平台，涵盖图片处理、音频处理、文本处理、开发工具等多个领域，让用户无需下载安装任何软件，就能在浏览器中完成各种任务。
+      </p>
+    </div>
+
+    <!-- 我们的工具 -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 shadow mb-6">
+      <h2 class="text-2xl font-bold mb-4">我们的工具</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary flex-shrink-0">
+            <i class="fa-solid fa-image"></i>
+          </div>
+          <div>
+            <h3 class="font-medium mb-1">图片处理</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400">图片压缩、图片格式转换</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary flex-shrink-0">
+            <i class="fa-solid fa-music"></i>
+          </div>
+          <div>
+            <h3 class="font-medium mb-1">音频处理</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400">音频格式转换、音频裁切、视频转音频</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary flex-shrink-0">
+            <i class="fa-solid fa-text-height"></i>
+          </div>
+          <div>
+            <h3 class="font-medium mb-1">文本处理</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Base64加解密、JSON格式化</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary flex-shrink-0">
+            <i class="fa-solid fa-code"></i>
+          </div>
+          <div>
+            <h3 class="font-medium mb-1">开发工具</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400">更多开发相关工具正在开发中</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 技术特点 -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 shadow mb-6">
+      <h2 class="text-2xl font-bold mb-4">技术特点</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-4">
+          <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary mb-3">
+            <i class="fa-solid fa-bolt"></i>
+          </div>
+          <h3 class="font-medium mb-2">高效处理</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400">本地浏览器处理，无需上传服务器，处理速度快</p>
+        </div>
+        <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-4">
+          <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary mb-3">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+          <h3 class="font-medium mb-2">安全隐私</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400">所有处理在本地完成，保护您的文件安全</p>
+        </div>
+        <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-4">
+          <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary mb-3">
+            <i class="fa-solid fa-mobile-alt"></i>
+          </div>
+          <h3 class="font-medium mb-2">响应式设计</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400">适配各种设备，随时随地使用</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 联系我们 -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 shadow">
+      <h2 class="text-2xl font-bold mb-4">联系我们</h2>
+      <p class="text-slate-600 dark:text-slate-400 mb-4">
+        如果您有任何建议或问题，欢迎联系我们。我们会认真听取您的反馈，不断改进我们的工具和服务。
+      </p>
+      <div class="flex flex-wrap gap-4">
+        <a href="#" onclick="showToast('邮箱功能正在开发中', 'info')" class="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors">
+          <i class="fa-solid fa-envelope"></i>
+          <span>contact@yunhetools.com</span>
+        </a>
+        <a href="#" onclick="showToast('GitHub功能正在开发中', 'info')" class="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors">
+          <i class="fa-brands fa-github"></i>
+          <span>GitHub</span>
+        </a>
+        <a href="#" onclick="showToast('Twitter功能正在开发中', 'info')" class="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors">
+          <i class="fa-brands fa-twitter"></i>
+          <span>Twitter</span>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast 容器 -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script>
+    // 暗黑模式切换
+    const themeToggle = document.getElementById('themeToggle');
+
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+    }
+
+    themeToggle?.addEventListener('click', toggleDarkMode);
+
+    // 记忆暗黑模式
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.documentElement.classList.add('dark');
+    }
+
+    // Toast 提示功能
+    let toastId = 0;
+    const toastContainer = document.getElementById('toastContainer');
+
+    function showToast(message, type = 'info', duration = 3000) {
+      toastId++;
+      const id = toastId;
+
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.id = `toast-${id}`;
+
+      let icon = 'fa-info-circle';
+      switch (type) {
+        case 'success':
+          icon = 'fa-check-circle';
+          break;
+        case 'error':
+          icon = 'fa-exclamation-circle';
+          break;
+        case 'warning':
+          icon = 'fa-exclamation-triangle';
+          break;
+        case 'info':
+          icon = 'fa-info-circle';
+          break;
+      }
+
+      toast.innerHTML = `
+        <div class="flex items-center gap-2">
+          <i class="fa-solid ${icon}"></i>
+          <span>${message}</span>
+        </div>
+      `;
+
+      toastContainer.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 10);
+
+      if (duration > 0) {
+        setTimeout(() => {
+          closeToast(id);
+        }, duration);
+      }
+
+      return id;
+    }
+
+    function closeToast(id) {
+      const toast = document.getElementById(`toast-${id}`);
+      if (toast) {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          if (toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+          }
+        }, 300);
+      }
+    }
+  </script>
+</body>
+</html>

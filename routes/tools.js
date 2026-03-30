@@ -33,6 +33,13 @@ const tools = [
     category: '音频处理'
   },
   {
+    id: 'video-to-audio',
+    title: '音频提取',
+    description: '从视频中提取音频，支持多种视频格式',
+    icon: 'fa-video',
+    category: '音频处理'
+  },
+  {
     id: 'base64',
     title: 'Base64加解密',
     description: 'Base64加解密工具、编码解码操作',
@@ -174,6 +181,26 @@ router.get('/audio-cutter', (req, res) => {
   };
   
   res.render('audio-cutter', { ...page_data }, (err, html_template) => {
+    if (err) { console.log(err); };
+    let [html, page_script, page_style] = html_template.split(split_string);
+    res.render('layout', {
+      ...page_data,
+      main: html,
+      page_script,
+      page_style
+    });
+  });
+});
+
+// 视频转音频路由
+router.get('/video-to-audio', (req, res) => {
+  let page_data = {
+    title: '视频转音频工具 - 云河工具站',
+    description: '云河工具站 - 免费在线视频转音频工具，从视频中提取音频，支持多种视频格式',
+    keywords: '视频转音频,视频提取音频,在线视频转音频,视频音频分离,免费音频处理'
+  };
+  
+  res.render('video-to-audio', { ...page_data }, (err, html_template) => {
     if (err) { console.log(err); };
     let [html, page_script, page_style] = html_template.split(split_string);
     res.render('layout', {

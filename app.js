@@ -36,10 +36,13 @@ app.get('/sitemap.xml', async (req, res) => {
     // 1. 你的链接列表（必须至少1个）
     const links = [
       { url: '/', changefreq: 'daily', priority: 1.0 },
+      { url: '/blog.html', changefreq: 'weekly', priority: 0.9 },
+      { url: '/about.html', changefreq: 'monthly', priority: 0.7 },
       { url: '/image-converter', changefreq: 'weekly', priority: 0.8 },
       { url: '/image-compressor', changefreq: 'weekly', priority: 0.8 },
       { url: '/audio-converter', changefreq: 'weekly', priority: 0.8 },
       { url: '/audio-cutter', changefreq: 'weekly', priority: 0.8 },
+      { url: '/video-to-audio', changefreq: 'weekly', priority: 0.8 },
       { url: '/base64', changefreq: 'weekly', priority: 0.8 },
       { url: '/json-format', changefreq: 'weekly', priority: 0.8 },
     ];

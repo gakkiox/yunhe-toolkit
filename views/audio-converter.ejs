@@ -1,4 +1,4 @@
-<!-- 音频转换工具主体 -->
+<!-- 音频格式转换工具主体 -->
 <div class="max-w-4xl mx-auto">
   <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 shadow">
     
@@ -108,7 +108,7 @@
   </div>
 </div>
 C93BDC78EBB83EAA
-<script src="/js/jszip.min.js"></script>
+
 <script>
   // DOM 元素获取
   const fileInput = document.getElementById('fileInput');
@@ -254,6 +254,79 @@ C93BDC78EBB83EAA
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
+  // 使用Web Audio API和MediaRecorder转换音频格式
+  async function convertAudio(file, outputFormat, quality) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // 创建音频上下文
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // 读取音频文件
+        const arrayBuffer = await file.arrayBuffer();
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+        
+        // 创建音频源
+        const source = audioContext.createBufferSource();
+        source.buffer = audioBuffer;
+        
+        // 创建媒体流目标
+        const destination = audioContext.createMediaStreamDestination();
+        source.connect(destination);
+        
+        // 开始播放
+        source.start();
+        
+        // 配置MIME类型
+        let mimeType = 'audio/ogg';
+        if (outputFormat === 'mp3') {
+          mimeType = 'audio/mp3';
+        } else if (outputFormat === 'wav') {
+          mimeType = 'audio/wav';
+        } else if (outputFormat === 'aac') {
+          mimeType = 'audio/aac';
+        }
+        
+        // 检查浏览器是否支持该MIME类型
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          // 回退到默认格式
+          mimeType = 'audio/ogg';
+        }
+        
+        // 创建媒体记录器
+        const mediaRecorder = new MediaRecorder(destination.stream, { mimeType });
+        const chunks = [];
+        
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            chunks.push(event.data);
+          }
+        };
+        
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(chunks, { type: mimeType });
+          resolve(blob);
+        };
+        
+        mediaRecorder.onerror = (error) => {
+          reject(error);
+        };
+        
+        // 开始录制
+        mediaRecorder.start();
+        
+        // 播放结束后停止录制
+        source.onended = () => {
+          setTimeout(() => {
+            mediaRecorder.stop();
+          }, 100);
+        };
+        
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
   // 开始批量转换按钮事件
   convertBtn.addEventListener('click', async () => {
     if (selectedFiles.length === 0) {
@@ -267,6 +340,9 @@ C93BDC78EBB83EAA
     conversionResults = [];
 
     try {
+      progressText.textContent = '准备转换...';
+      progressBarFill.style.width = '0%';
+
       let processed = 0;
       const total = selectedFiles.length;
 
@@ -274,10 +350,13 @@ C93BDC78EBB83EAA
         const file = selectedFiles[i];
         
         progressDetail.textContent = `正在处理: ${file.name}`;
-        updateProgress(((i) / total) * 100);
+        progressText.textContent = `正在转换... ${Math.round((i / total) * 100)}%`;
+        progressBarFill.style.width = `${(i / total) * 100}%`;
 
         try {
-          const convertedBlob = await simulateConversion(file, outputFormat.value, audioQuality.value);
+          // 执行音频转换
+          const outputFormatValue = outputFormat.value;
+          const convertedBlob = await convertAudio(file, outputFormatValue, audioQuality.value);
           const convertedUrl = URL.createObjectURL(convertedBlob);
           
           const originalSize = file.size;
@@ -291,16 +370,18 @@ C93BDC78EBB83EAA
             originalSize: originalSize,
             convertedSize: convertedSize,
             sizeChange: sizeChange,
-            outputFormat: outputFormat.value
+            outputFormat: outputFormatValue
           });
 
           processed++;
-          updateProgress((processed / total) * 100);
+          progressText.textContent = `正在转换... ${Math.round((processed / total) * 100)}%`;
+          progressBarFill.style.width = `${(processed / total) * 100}%`;
         } catch (fileError) {
           console.error(`转换文件 ${file.name} 失败:`, fileError);
           showToast(`文件 ${file.name} 转换失败，跳过该文件`, 'error');
           processed++;
-          updateProgress((processed / total) * 100);
+          progressText.textContent = `正在转换... ${Math.round((processed / total) * 100)}%`;
+          progressBarFill.style.width = `${(processed / total) * 100}%`;
         }
       }
 
@@ -326,18 +407,6 @@ C93BDC78EBB83EAA
       showToast('转换过程中出现错误，请重试', 'error');
     }
   });
-
-  // 模拟转换函数（实际项目中需要使用Web Audio API或其他库）
-  async function simulateConversion(file, format, quality) {
-    return new Promise((resolve) => {
-      // 模拟转换过程
-      setTimeout(() => {
-        // 这里只是模拟，实际项目中需要实现真实的音频转换
-        // 可以使用Web Audio API或者第三方库如librosa.js等
-        resolve(file);
-      }, 1000);
-    });
-  }
 
   // 渲染转换结果
   function renderResults() {
@@ -392,12 +461,6 @@ C93BDC78EBB83EAA
     setTimeout(() => {
       URL.revokeObjectURL(result.convertedUrl);
     }, 1000);
-  }
-
-  // 更新进度
-  function updateProgress(percent) {
-    progressBarFill.style.width = `${percent}%`;
-    progressText.textContent = `正在转换... ${Math.round(percent)}%`;
   }
 
   // 下载全部按钮事件

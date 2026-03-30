@@ -1,0 +1,351 @@
+<!-- 视频转音频工具主体 -->
+<div class="max-w-4xl mx-auto">
+  <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 shadow">
+    
+    <!-- 文件上传区域 -->
+    <div id="uploadArea" class="drop-zone border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg p-8 text-center cursor-pointer transition-colors duration-200">
+      <i class="fa-solid fa-video text-4xl text-slate-400 mb-3"></i>
+      <h3 class="text-lg font-medium mb-1">拖拽视频到此处或点击上传</h3>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">支持 MP4, WebM, AVI, MOV 格式</p>
+      <p class="text-xs text-slate-400 dark:text-slate-500">单个文件最大大小: 100MB</p>
+      <input type="file" id="fileInput" accept="video/*" class="hidden">
+      <button id="browseBtn" class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-light transition-colors">
+        选择视频
+      </button>
+    </div>
+
+    <!-- 视频预览和提取选项 -->
+    <div id="previewArea" class="mt-6 hidden">
+      <h3 class="font-medium mb-3">视频预览与提取选项</h3>
+      
+      <div class="bg-slate-100 dark:bg-slate-700 rounded-lg p-4">
+        <!-- 视频播放器 -->
+        <div class="mb-4">
+          <video id="videoPlayer" controls class="w-full max-h-64">
+            您的浏览器不支持视频播放。
+           </video>
+        </div>
+        
+        <!-- 提取选项 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">输出音频格式</label>
+            <select id="outputFormat" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100">
+              <option value="mp3">MP3</option>
+              <option value="wav">WAV</option>
+              <option value="ogg">OGG</option>
+              <option value="aac">AAC</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">音频质量</label>
+            <select id="audioQuality" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100">
+              <option value="low">低质量</option>
+              <option value="medium" selected>中等质量</option>
+              <option value="high">高质量</option>
+            </select>
+          </div>
+        </div>
+        
+        <button id="extractBtn" class="w-full py-3 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity font-medium">
+          <i class="fa-solid fa-volume-up mr-2"></i>
+          开始提取音频
+        </button>
+      </div>
+    </div>
+
+    <!-- 进度条 -->
+    <div id="progressArea" class="mt-6 hidden">
+      <h3 class="font-medium mb-2">提取进度</h3>
+      <div class="h-3 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+        <div id="progressBarFill" class="h-full bg-primary dark:bg-primary-light w-0 transition-all duration-300"></div>
+      </div>
+      <p id="progressText" class="text-center text-sm mt-2 text-slate-600 dark:text-slate-300">准备中...</p>
+    </div>
+
+    <!-- 结果展示区域 -->
+    <div id="resultArea" class="mt-6 hidden">
+      <h3 class="font-medium mb-4">提取结果</h3>
+      
+      <div class="bg-slate-100 dark:bg-slate-700 rounded-lg p-4">
+        <!-- 提取后音频预览 -->
+        <div class="mb-4">
+          <h4 class="text-sm font-medium mb-2">提取后音频</h4>
+          <audio id="extractedAudio" controls class="w-full">
+            您的浏览器不支持音频播放。
+           </audio>
+        </div>
+        
+        <div class="flex space-x-2">
+          <button id="downloadBtn" class="flex-1 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-light transition-colors font-medium">
+            <i class="fa-solid fa-download mr-2"></i>
+            下载
+          </button>
+          <button id="newExtractBtn" class="flex-1 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+            <i class="fa-solid fa-plus mr-1"></i>
+            新提取
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 特点介绍 -->
+  <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
+      <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-3">
+        <i class="fa-solid fa-file-video"></i>
+      </div>
+      <h4 class="font-medium mb-1">多种格式</h4>
+      <p class="text-sm text-slate-600 dark:text-slate-400">支持 MP4、WebM、AVI、MOV 等多种视频格式。</p>
+    </div>
+    <div class="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
+      <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-3">
+        <i class="fa-solid fa-bolt"></i>
+      </div>
+      <h4 class="font-medium mb-1">快速提取</h4>
+      <p class="text-sm text-slate-600 dark:text-slate-400">本地浏览器处理，无需上传服务器，提取速度快。</p>
+    </div>
+    <div class="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
+      <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-3">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <h4 class="font-medium mb-1">安全隐私</h4>
+      <p class="text-sm text-slate-600 dark:text-slate-400">所有处理在本地完成，保护您的视频文件安全。</p>
+    </div>
+  </div>
+</div>
+C93BDC78EBB83EAA
+
+<script>
+  // DOM 元素获取
+  const fileInput = document.getElementById('fileInput');
+  const browseBtn = document.getElementById('browseBtn');
+  const uploadArea = document.getElementById('uploadArea');
+  const previewArea = document.getElementById('previewArea');
+  const videoPlayer = document.getElementById('videoPlayer');
+  const outputFormat = document.getElementById('outputFormat');
+  const audioQuality = document.getElementById('audioQuality');
+  const extractBtn = document.getElementById('extractBtn');
+  const progressArea = document.getElementById('progressArea');
+  const progressBarFill = document.getElementById('progressBarFill');
+  const progressText = document.getElementById('progressText');
+  const resultArea = document.getElementById('resultArea');
+  const extractedAudio = document.getElementById('extractedAudio');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const newExtractBtn = document.getElementById('newExtractBtn');
+
+  let selectedFile = null;
+  let audioContext = null;
+
+  // 文件浏览按钮点击事件
+  browseBtn.addEventListener('click', () => {
+    fileInput.click();
+  });
+
+  // 文件输入变化事件
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+      handleFileSelect(e.target.files[0]);
+    }
+  });
+
+  // 拖拽上传事件
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('border-primary', 'bg-primary/10');
+  });
+
+  uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('border-primary', 'bg-primary/10');
+  });
+
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('border-primary', 'bg-primary/10');
+    if (e.dataTransfer.files.length > 0) {
+      handleFileSelect(e.dataTransfer.files[0]);
+    }
+  });
+
+  // 处理文件选择
+  function handleFileSelect(file) {
+    if (!file.type.startsWith('video/')) {
+      showToast('请选择视频文件', 'error');
+      return;
+    }
+
+    if (file.size > 100 * 1024 * 1024) {
+      showToast('文件大小超出100MB限制', 'error');
+      return;
+    }
+
+    selectedFile = file;
+
+    // 设置视频播放器
+    const objectURL = URL.createObjectURL(file);
+    videoPlayer.src = objectURL;
+
+    // 显示预览区域
+    previewArea.classList.remove('hidden');
+    showToast('视频加载成功', 'success');
+  }
+
+  // 使用Web Audio API和MediaRecorder从视频中提取音频
+  async function extractAudio(videoFile, outputFormat, quality) {
+    return new Promise((resolve, reject) => {
+      try {
+        // 创建视频元素
+        const video = document.createElement('video');
+        video.src = URL.createObjectURL(videoFile);
+        video.muted = true;
+
+        video.onloadedmetadata = () => {
+          // 创建音频上下文
+          if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          }
+
+          // 创建媒体元素源
+          const mediaElementSource = audioContext.createMediaElementSource(video);
+          
+          // 创建媒体流目标
+          const destination = audioContext.createMediaStreamDestination();
+          mediaElementSource.connect(destination);
+
+          // 配置MIME类型
+          let mimeType = 'audio/ogg';
+          if (outputFormat === 'mp3') {
+            mimeType = 'audio/mp3';
+          } else if (outputFormat === 'wav') {
+            mimeType = 'audio/wav';
+          } else if (outputFormat === 'aac') {
+            mimeType = 'audio/aac';
+          }
+
+          // 检查浏览器是否支持该MIME类型
+          if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'audio/ogg';
+          }
+
+          // 创建媒体记录器
+          const mediaRecorder = new MediaRecorder(destination.stream, { mimeType });
+          const chunks = [];
+
+          mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+              chunks.push(event.data);
+            }
+          };
+
+          mediaRecorder.onstop = () => {
+            const blob = new Blob(chunks, { type: mimeType });
+            resolve(blob);
+          };
+
+          mediaRecorder.onerror = (error) => {
+            reject(error);
+          };
+
+          // 开始录制
+          mediaRecorder.start();
+
+          // 开始播放视频
+          video.play();
+
+          // 视频结束后停止录制
+          video.onended = () => {
+            setTimeout(() => {
+              mediaRecorder.stop();
+            }, 100);
+          };
+        };
+
+        video.onerror = (error) => {
+          reject(error);
+        };
+
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  // 开始提取按钮事件
+  extractBtn.addEventListener('click', async () => {
+    if (!selectedFile) {
+      showToast('请先选择视频文件', 'warning');
+      return;
+    }
+
+    progressArea.classList.remove('hidden');
+    resultArea.classList.add('hidden');
+
+    try {
+      progressText.textContent = '正在提取音频...';
+      progressBarFill.style.width = '0%';
+
+      // 模拟进度
+      let progress = 0;
+      const progressInterval = setInterval(() => {
+        progress += 10;
+        progressBarFill.style.width = `${progress}%`;
+        if (progress >= 90) {
+          clearInterval(progressInterval);
+        }
+      }, 100);
+
+      // 执行音频提取
+      const outputFormatValue = outputFormat.value;
+      const extractedBlob = await extractAudio(selectedFile, outputFormatValue, audioQuality.value);
+      const extractedUrl = URL.createObjectURL(extractedBlob);
+
+      // 更新进度
+      clearInterval(progressInterval);
+      progressBarFill.style.width = '100%';
+      progressText.textContent = '提取完成！';
+
+      // 设置提取后音频播放器
+      extractedAudio.src = extractedUrl;
+
+      // 显示结果区域
+      setTimeout(() => {
+        resultArea.classList.remove('hidden');
+        progressArea.classList.add('hidden');
+        showToast('音频提取成功', 'success');
+      }, 500);
+
+      // 下载按钮事件
+      downloadBtn.onclick = () => {
+        const a = document.createElement('a');
+        a.href = extractedUrl;
+        const fileName = selectedFile.name.replace(/\.[^/.]+$/, `_audio.${extractedBlob.type.split('/')[1]}`);
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showToast(`开始下载 ${fileName}`, 'success');
+      };
+
+    } catch (error) {
+      console.error('提取失败:', error);
+      progressText.textContent = '提取失败，请重试。';
+      showToast('提取失败，请重试', 'error');
+    }
+  });
+
+  // 新提取按钮事件
+  newExtractBtn.addEventListener('click', () => {
+    fileInput.value = '';
+    selectedFile = null;
+    
+    videoPlayer.src = '';
+    extractedAudio.src = '';
+    
+    previewArea.classList.add('hidden');
+    progressArea.classList.add('hidden');
+    resultArea.classList.add('hidden');
+    
+    showToast('已重置，可开始新的提取任务', 'info');
+  });
+</script>
