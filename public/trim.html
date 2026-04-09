@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>FFmpeg.wasm 音频裁剪</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        .controls { margin-bottom: 20px; border: 1px solid #ddd; padding: 15px; border-radius: 8px; }
+        #log { background: #333; color: #eee; padding: 10px; height: 150px; overflow-y: auto; font-family: monospace; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+    <h2>音频裁剪 (FFmpeg.wasm)</h2>
+
+    <div class="controls">
+        <input type="file" id="audio-upload" accept="audio/*"><br><br>
+        开始时间 (秒): <input type="number" id="start-time" value="0" min="0">
+        持续时长 (秒): <input type="number" id="duration" value="10" min="1">
+        <button id="run-btn" disabled>加载中...</button>
+    </div>
+
+    <div id="log">正在初始化 FFmpeg...</div>
+    <br>
+    <div id="result"></div>
+
+    <script type="module">
+        import { FFmpeg } from 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.7/dist/esm/index.js';
+        import { fetchFile, toBlobURL } from 'https://unpkg.com/@ffmpeg/util@0.12.1/dist/esm/index.js';
+
+        const ffmpeg = new FFmpeg();
+        const logEl = document.getElementById('log');
+        const runBtn = document.getElementById('run-btn');
+
+        // 打印日志
+        ffmpeg.on('log', ({ message }) => {
+            logEl.innerHTML += `<div>${message}</div>`;
+            logEl.scrollTop = logEl.scrollHeight;
+        });
+
+        // 初始化 FFmpeg
+        async function init() {
+            const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
+            await ffmpeg.load({
+                coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+                wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+            });
+            runBtn.disabled = false;
+            runBtn.innerText = '开始裁剪';
+            logEl.innerHTML += '<div>FFmpeg 加载完成！</div>';
+        }
+
+        init();
+
+        // 执行裁剪
+        runBtn.addEventListener('click', async () => {
+            const fileInput = document.getElementById('audio-upload');
+            if (fileInput.files.length === 0) return alert('请先选择音频文件');
+
+            const file = fileInput.files[0];
+            const start = document.getElementById('start-time').value;
+            const duration = document.getElementById('duration').value;
+
+            runBtn.disabled = true;
+            runBtn.innerText = '处理中...';
+
+            // 1. 将文件写入 ffmpeg 虚拟文件系统
+            await ffmpeg.writeFile('input_audio', await fetchFile(file));
+
+            // 2. 执行命令: ffmpeg -ss [开始] -t [时长] -i input -c copy output.mp3
+            // -ss 放在 -i 前面速度更快（寻求帧），-c copy 表示不重新编码，极速导出
+            await ffmpeg.exec([
+                '-ss', `${start}`, 
+                '-t', `${duration}`, 
+                '-i', 'input_audio', 
+                '-c', 'copy', 
+                'output.mp3'
+            ]);
+
+            // 3. 读取处理后的文件
+            const data = await ffmpeg.readFile('output.mp3');
+            const audioBlob = new Blob([data.buffer], { type: 'audio/mp3' });
+            const url = URL.createObjectURL(audioBlob);
+
+            // 4. 显示结果
+            const resultEl = document.getElementById('result');
+            resultEl.innerHTML = `
+                <h3>裁剪完成：</h3>
+                <audio controls src="${url}"></audio><br>
+                <a href="${url}" download="trimmed.mp3">下载裁剪后的音频</a>
+            `;
+
+            runBtn.disabled = false;
+            runBtn.innerText = '再次裁剪';
+        });
+    </script>
+</body>
+</html>
